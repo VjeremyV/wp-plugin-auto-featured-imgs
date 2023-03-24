@@ -8,6 +8,7 @@
     Version: 0.1
  */
 require_once plugin_dir_path(__FILE__) . 'functions/AFI_functions.php';
+define('PLUG_DIR', plugin_dir_url(__FILE__));
 
 // define('TAROT_PLUG_DIR', plugin_dir_url(__FILE__));
 add_action('rest_api_init', 'AFI_get_missing_featured_imgs_routes');
