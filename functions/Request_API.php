@@ -7,7 +7,7 @@
 function call_API_Envato($url)
 {
     $ch= curl_init();
-    $authorization = "Authorization: Bearer nJ20uF5k72dTHVrsNDa8VTS1xHNSP1LB"; // Prepare the authorisation token
+    $authorization = "Authorization: Bearer TOKEN"; // Prepare the authorisation token
 
 
     curl_setopt($ch, CURLOPT_URL, $url);

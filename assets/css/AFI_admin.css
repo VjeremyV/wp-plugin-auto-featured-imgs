@@ -1,0 +1,25 @@
+#apiKeysContainer{
+    display: flex;
+    align-items: center;
+
+    justify-content: start;
+    flex-wrap: wrap;
+}
+
+#apiKeysContainer form{
+    margin: 30px;
+    margin-top: 0;
+    margin-right: 75px;
+    display: flex;
+    flex-direction: column;
+}
+
+#apiKeysContainer form .showPwd{
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+#apiKeysContainer form .showPwd input{
+    margin: 0 5px;
+}

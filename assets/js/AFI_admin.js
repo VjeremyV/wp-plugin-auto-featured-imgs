@@ -1,16 +1,22 @@
 (()=> {
+    console.log('prout')
     let options = {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       };
+      let formGenerateImgs = document.getElementById('generateImgs');
+      let envatoAPIForm = document.getElementById('envatoAPIForm');
+      let text = document.getElementById('text');
+
       /////////////////////////////////////////////////////////////////////////////////////
 
+      envatoAPIForm.addEventListener('submit', (e)=> {
+        e.preventDefault();
+      })
 
-    let form = document.getElementById('form');
-    let text = document.getElementById('test');
-    form.addEventListener('submit', async (e) => {
+    formGenerateImgs.addEventListener('submit', async (e) => {
         e.preventDefault();
         await getmissingImgsArtc();
         await getImgs(text.value);

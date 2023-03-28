@@ -7,13 +7,13 @@
     Author URI:       https://github.com/VjeremyV
     Version: 0.1
  */
-require_once plugin_dir_path(__FILE__) . 'functions/AFI_functions.php';
 define('PLUG_DIR', plugin_dir_url(__FILE__));
-define('API_ENVATO', 'nJ20uF5k72dTHVrsNDa8VTS1xHNSP1LB');
+require_once plugin_dir_path(__FILE__) . 'functions/AFI_functions.php';
 
-// define('TAROT_PLUG_DIR', plugin_dir_url(__FILE__));
+register_activation_hook(__FILE__, 'add_DB');
 add_action('rest_api_init', 'AFI_get_missing_featured_imgs_routes');
-add_action('rest_api_init', 'AFI_get_imgs');
+add_action('rest_api_init', 'AFI_add_apikeys_routes');
+add_action('rest_api_init', 'AFI_get_imgs_routes');
 add_action( 'admin_menu', 'AFI_addAdminLink' );
 
 
