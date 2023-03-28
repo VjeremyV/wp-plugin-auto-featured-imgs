@@ -1,1 +1,2 @@
-grgeger
+token-name : auto-featured-imgs
+token : nJ20uF5k72dTHVrsNDa8VTS1xHNSP1LB

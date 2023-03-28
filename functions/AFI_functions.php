@@ -1,5 +1,5 @@
 <?php
-
+include_once(__DIR__.'/Request_API.php');
 /**
  * ajoute mon menu au panneau d'admin de WP
  *
@@ -26,6 +26,22 @@ function AFI_get_missing_featured_imgs_routes(){
     ]);
 }
 
+function AFI_get_imgs(){
+    register_rest_route('AFI/v1', '/AFI_get_imgs', [
+        'methods' => 'GET', 
+        'callback' => function(){
+            return GetImgs();
+        },
+        'args'=> [
+            'text' => [
+                'required'=> true,
+                'type'=> 'string',
+                'description'=> esc_html__('requete de recherche'),
+                'sanitize_callback'=> 'sanitize_text_field'
+            ]
+        ]
+    ]);
+}
 
 function AFI_get_missing_featured_imgs_articles (){
     global $wpdb;
@@ -38,3 +54,20 @@ function AFI_get_missing_featured_imgs_articles (){
 }
 
  
+    /**
+     * Spinne un texte donnée via la connexion avec worldai
+     *
+     * @param [string] $text
+     * @return mixed
+     */
+    function GetImgs():mixed{
+        $text = $_GET['text'];
+        //informations endpoint API
+        $url = 'https://api.envato.com/v1/discovery/search/search/item?term='.$text.'&site=photodune.net&orientation=landscape&sort_by=relevance';
+        // $url = '/wp-json/AFI/v1/get_missing_articles';
+
+        // CallAPI($url);
+        //on renvoie le resultat du call API
+        return json_decode(call_API_Envato($url));
+
+    }
