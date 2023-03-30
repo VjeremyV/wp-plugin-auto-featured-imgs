@@ -1,6 +1,6 @@
 <?php
 include_once(__DIR__.'/Request_API.php');
-// define('AFI_DBNAME', $wpdb->prefix . 'wa_AFI_keys');
+define('AFI_DBNAME', $wpdb->prefix . 'wa_AFI_keys');
 /**
  * ajoute mon menu au panneau d'admin de WP
  *
@@ -38,9 +38,7 @@ function AFI_get_missing_featured_imgs_routes(){
 function AFI_add_apikeys_routes(){
     register_rest_route('AFI/v1', '/add_API', [
         'methods' => 'POST', 
-        'callback' => function(){
-            return AFI_add_apikeys();
-        },
+        'callback' => 'AFI_add_apikeys',
         'args'=>array(
             'service'=>array(
                 'type'=>'string',
@@ -86,6 +84,40 @@ function AFI_get_imgs_routes(){
     ]);
 }
 
+function AFI_get_translate_routes(){
+    register_rest_route('AFI/v1', '/get_translate', [
+        'methods' => 'GET', 
+        'callback' => function(){
+            return get_translate();
+        },
+        'args'=> [
+            'text' => [
+                'required'=> true,
+                'type'=> 'string',
+                'description'=> esc_html__('requete de recherche'),
+                'sanitize_callback'=> 'sanitize_text_field'
+            ]
+        ]
+    ]);
+}
+
+
+function get_translate(){
+    $text = $_GET['text'];
+    global $wpdb;
+        $request = 'SELECT *  FROM '. AFI_DBNAME. ' WHERE `service` = \'deepl\'';
+        $data= $wpdb->get_results(
+            $wpdb->prepare($request)
+        );
+        $apiKey = $data[0]->clef;
+    //informations endpoint API
+    $url = 'https://api-free.deepl.com/v2/translate';
+
+    //on renvoie le resultat du call API
+    return json_decode(call_API_Deepl($url, $apiKey, $text));
+}
+
+
 
 
 function AFI_get_missing_featured_imgs_articles (){
@@ -95,44 +127,83 @@ function AFI_get_missing_featured_imgs_articles (){
     $data= $wpdb->get_results(
         $wpdb->prepare($request)
     );
-    return $data;
+    $new_array = [];
+    $count = 0;
+    foreach($data as $article){
+        $article->request = 'request-'.$count;
+        $article->include = 'include-'.$count;
+        $new_array[] = $article;
+        $count++;
+    }
+    return $new_array;
 }
 
- 
+ /**
+  * 
+  *
+  * @param WP_REST_Request $request
+  * @return void
+  */
 function AFI_add_apikeys(WP_REST_Request $request){
-    $params= $request->get_params();
     global $wpdb;
+    $params= $request->get_params();
     $service = htmlspecialchars($params['service']);
+    // return $service;
     $clef = htmlspecialchars($params['clef']);
+    
+    $req = "SELECT * FROM ". AFI_DBNAME ." WHERE `service` = '".$service."'";
+    $result= $wpdb->get_results(
+        $wpdb->prepare($req)
+    );
+    if(count($result) > 0){        
+        if($wpdb->update(AFI_DBNAME, [
+            'clef'=>$clef]
+            , ['id' => $result[0]->id])      
+            ){
+                
+                return 'la cle API a bien été mise à jour';   
+            } else {
+                return 'la cle API n\'a pas pu être mise à jour';
+            }
+    } else {
+        if($wpdb->query(
+            $wpdb->prepare(
+            "INSERT INTO ". AFI_DBNAME."
+            (service, clef)
+            VALUES ( %s, %s)",
+                  $service,
+                  $clef,           
+            )
+            )){
+                return 'la cle API a bien été créée';  
+            } else {
+                return 'un problème est survenu lors de l\'enregistrement sur le serveur';
+            }
+    }
 
-
-    if($wpdb->query(
-        $wpdb->prepare(
-        "INSERT INTO ". AFI_DBNAME."
-        (service, clef)
-        VALUES ( %s, %s)",
-              $service,
-              $clef,           
-        )
-        )){
-        echo 'clef API renseignée';
-        } else {
-            echo 'un problème est survenu lors de l\'enregistrement sur le serveur';
-        }
 }
     /**
-     * Spinne un texte donnée via la connexion avec worldai
+     * récupère les images sur envato
      *
      * @param [string] $text
      * @return mixed
      */
     function GetImgs():mixed{
+        global $wpdb;
+
         $text = $_GET['text'];
+        $text = str_replace(' ', '-', $text);
+        //informations endpoint API
+            $request = 'SELECT *  FROM '. AFI_DBNAME. ' WHERE `service` = \'envato\'';
+            $data= $wpdb->get_results(
+                $wpdb->prepare($request)
+            );
+            $apiKey = $data[0]->clef;
         //informations endpoint API
         $url = 'https://api.envato.com/v1/discovery/search/search/item?term='.$text.'&site=photodune.net&orientation=landscape&sort_by=relevance';
 
         //on renvoie le resultat du call API
-        return json_decode(call_API_Envato($url));
+        return json_decode(call_API_Envato($url, $apiKey, $text));
 
     }
 

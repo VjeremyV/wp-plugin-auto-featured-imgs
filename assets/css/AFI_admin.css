@@ -23,3 +23,57 @@
 #apiKeysContainer form .showPwd input{
     margin: 0 5px;
 }
+
+
+#missingFeaturedArticles{
+    width: 90%;
+    margin: auto;
+    margin-top: 50px;
+    display: none;
+}
+
+#missingFeaturedArticles th{
+    border-bottom: 1px solid #434343;
+}
+
+#missingFeaturedArticles, #missingFeaturedArticles th, #missingFeaturedArticles td{
+    border-collapse: collapse;
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+.validationMessage{
+    border: 1px solid  rgba(17, 158, 17, 0.678) ;
+    color: rgba(17, 158, 17, 0.678);
+    border-radius: 10px;
+    padding: 10px 15px;
+
+}
+
+.errorMessage{
+    border: 1px solid rgba(180, 42, 7, 0.678);
+    color: rgba(180, 42, 7, 0.678);
+    border-radius: 10px;
+    padding: 10px 15px;
+}
+
+#messages {
+    width: 100%;
+    text-align: center;
+
+}
+
+#deeplContainer{
+    margin-left: 20px;
+    display : flex;
+    align-items: center;
+}
+#Container{
+    display: flex;
+    align-items: center;
+}
+
+#Container input {
+    margin: 0 5px;
+    
+}

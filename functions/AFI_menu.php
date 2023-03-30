@@ -4,6 +4,7 @@ wp_enqueue_script('AFI-admin-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI_adm
 wp_enqueue_script('AFI-animation-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI_animation.js', [], true);
 
 
+
 ?>
 
 <div class="wrap">
@@ -30,13 +31,29 @@ wp_enqueue_script('AFI-animation-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
       <input type="submit" value="mettre à jour">
     </form>
   </div>
-  <form id="generateImgs" class="container">
-    <label for="siteSource">Choisir la source de l'image</label>
-
-    <div class="loader"></div>
-    <div class="result_fetch"></div>
-    <input type="text" name="text" id="text">
-    <input type="submit" value="Générer les images mises en avant">
-  </form>
+  <div id="Container">
+    <form id="generateImgs" class="container">
+      <div class="loader"></div>
+      <div class="result_fetch"></div>
+      <input type="submit" value="Chercher les articles sans images mises en avant">
+    </form>
+    <div id="deeplContainer">
+      <input type="checkbox" name="goWithDeepl" id="goWithDeepl">
+      <label for="goWithDeepl">Traduire avec deepl </label>
+    </div>
+  </div>
+  <table id="missingFeaturedArticles">
+    <thead>
+      <tr>
+        <th>
+          <input type="checkbox" name="selectAll" id="selectAll">
+          <label for="selectAll">Selectionner tous les articles</label>
+        </th>
+        <th> H1 des articles </th>
+        <th><input type="text" name="fullfill" id="fullfill" placeholder="requête commune"></th>
+      </tr>
+    </thead>
+    <tbody id="missingFeaturedArticlesBody"></tbody>
+  </table>
+  <div id="messages"></div>
 </div>
-
