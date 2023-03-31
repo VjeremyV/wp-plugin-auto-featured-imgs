@@ -4,8 +4,9 @@
     // Data: array("param" => "value") ==> index.php?param=value
     
 
-function call_API_Envato($url, $apiKey, $text)
+function call_API_Envato($url, $apiKey)
 {
+
     $ch= curl_init();
     $authorization = "Authorization: Bearer ".$apiKey; // Prepare the authorisation token
 
@@ -36,7 +37,7 @@ function call_API_Deepl($url, $apiKey, $text){
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array($authorization )); // Inject the token into the header
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array($authorization)); // Inject the token into the header
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
     $resp = curl_exec($ch);

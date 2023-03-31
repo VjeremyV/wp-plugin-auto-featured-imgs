@@ -17,8 +17,10 @@
   let deeplAPIKey = document.getElementById("deeplAPI");
   let deeplAPIForm = document.getElementById("deeplAPIForm");
   let missingArtTable = document.getElementById("missingFeaturedArticles");
+  let checkImgsResults = document.getElementById("checkImgsResults");
   let goWithDeeplBtn = document.getElementById("goWithDeepl");
   let messagesContainer = document.getElementById('messages');
+
   ////////////////////////////////////////////ENREGISTREMENT DES CLEFS API/////////////////////////////////////////
 
   envatoAPIForm.addEventListener("submit", async (e) => {
@@ -46,6 +48,7 @@
   }
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   formGenerateImgs.addEventListener("submit", async (e) => {
+
     e.preventDefault();
     let missingFeaturedimg = await getmissingImgsArtc(); //retourne un tableau contenant les ojets articles
     displaytableHeader();
@@ -60,32 +63,48 @@
         displayMessage("Recherche envoyée", true)
         hideElement(submitToApiBtn);
         missingFeaturedimg = updateRequest(missingFeaturedimg);
-        await callEnvatoApi(missingFeaturedimg);
-        console.log('test asynchrone')
+        missingFeaturedimg = await callEnvatoApi(missingFeaturedimg);
+        console.log(missingFeaturedimg)
+        displaytableHeader(true);
+        displayResultsImgs(missingFeaturedimg);
+
       } else {
-        displayMessage("La requête d'un article selectionné n'a pas été remplie", false)
+        displayMessage("La requête d'un article selectionné n'a pas été remplie ou aucun artile n'a été selectionné", false)
       };
     });
-
-    // count = 0;
-    // for (const value of Object.entries(missingFeaturedimg)){
-    //     let articleTitle = value[1].post_title;
-    //     const translateArticleTitle = await translate(articleTitle);
-    //     missingFeaturedimg[count]["translatedTitle"] = translateArticleTitle['translations'][0]['text']
-    //     count++;
-    // }
-    // count = 0;
-    // for (const value of Object.entries(missingFeaturedimg)){
-    //     let articleTitle = value[1].translatedTitle;
-    //     const imgsUrls = await getImgs(articleTitle);
-    //     missingFeaturedimg[count]["img_url"] = imgsUrls
-    //     count++;
-    // }
-    // console.log(missingFeaturedimg);
   });
 
 
+  function displayResultsImgs(articles){
+    let html = articles
+      .map(
+        (article) => {let imgurl = article.imgsUrls ? selectRandom(article.imgsUrls) : "";
+          return  `
+  <tr>
+  <td><input type="checkbox" name="${article.include}" class="include" id="${article.include}"></td>
+  <td><p>${article.post_title}</p></td>
+  <td>${article.imgsUrls ? `<a href="${imgurl}" target="_blank"><img class="resultsImgs" src="${imgurl}+'" ></a> `: ""}</td>
+  </tr>
+  `}
+      )
+      .join("");
+    html += `   <td></td>   <td></td>   <td><input type="submit" id="submitToApiBtn" value="Valider les images"></td>
+    `;
+    let tableBody = document.getElementById("missingFeaturedArticlesBody");
+    tableBody.innerHTML = html;
+  }
 
+  function selectRandom(imgs){
+
+    let randomSelector = Math.floor(Math.random() * imgs.length);
+    return imgs[randomSelector]['image_urls'][imgs[randomSelector]['image_urls'].length-1]['url'];
+  }
+
+/**
+ * Met à jour l'objet contenant tous les articles avec les données des articles selectionnés
+ * @param {object} articles 
+ * @returns 
+ */
   function updateRequest(articles){
     count = 0;
     articles.forEach((field) => {
@@ -100,6 +119,12 @@
     })
     return articles;
   }
+
+  /**
+   * affiche un message de validation ou d'erreur
+   * @param {string} message 
+   * @param {boolean} validation 
+   */
   function displayMessage(message, validation){
     if(validation){
       messagesContainer.innerHTML = `
@@ -130,13 +155,23 @@
    */
   function checkField(fields) {
     let valid = true;
+    let emptyFields = 0;
+
     fields.forEach((field) => {
       let includeBtn = document.getElementById(field.include);
       let inputRequest = document.getElementById(field.request);
+
+      if(includeBtn.checked === false){
+        emptyFields++;
+      }
+
       if(goWithDeeplBtn.checked === false && includeBtn.checked === true && inputRequest.value ==""){
         valid = false;
       }
     })
+    if(emptyFields === fields.length){
+      valid = false;
+    }
     if(valid){
       lockFields(fields);
     }
@@ -159,8 +194,15 @@
     commonRequestInput.disabled = true;
     selectAllBtn.disabled = true;
   }
-  function displaytableHeader() {
-    missingArtTable.style.display = "table";
+  function displaytableHeader(secondTime = false) {
+    if(!secondTime){
+      missingArtTable.style.display = "table";
+      checkImgsResults.style.display = "none";
+    } else {
+      missingArtTable.style.display = "none";
+      checkImgsResults.style.display = "table";
+
+    }
   }
 
   /**
@@ -216,6 +258,11 @@
     tableBody.innerHTML = html;
   }
 
+  /**
+   * Fais l'appel à l'API deepl pour la traduction
+   * @param {string} text 
+   * @returns 
+   */
   async function translate(text) {
     const response = await fetch("/wp-json/AFI/v1/get_translate?text=" + text, {
       ...options,
@@ -224,6 +271,10 @@
     return data;
   }
 
+  /**
+   * Appel à l'API pour recevoir les articles n'ayant pas d'images à la une
+   * @returns 
+   */
   async function getmissingImgsArtc() {
     const response = await fetch("/wp-json/AFI/v1/get_missing_articles", {
       ...options,
@@ -232,14 +283,28 @@
     return data;
   }
 
+  /**
+   * demande l'appel à l'API pour la requete d'images et trie les données dans le tableau contenant tous les objet articles
+   * @param {object} articles 
+   * @returns 
+   */
   async function callEnvatoApi(articles){
-    await articles.forEach(async (article)=> {
-      if(article['request-text']){
+    const allResponses = await Promise.all(articles.map(async (article, index) => {
+      if (article['request-text'])
+      {
         let response = await getImgs(article['request-text']);
         console.log(response)
+        articles[index]['imgsUrls'] = response['matches']
       }
-    })
+    }));
+    return articles;
   }
+
+  /**
+   * Fais l'appel API pour la requete d'images
+   * @param {string} term 
+   * @returns 
+   */
   async function getImgs(term) {
     const response = await fetch("/wp-json/AFI/v1/AFI_get_imgs?text=" + term, {
       ...options,
@@ -247,4 +312,25 @@
     const data = await response.json();
     return data;
   }
+
+
+
+  ////////////////////////////////////////////////////////TEST/////////////////////////////////////////////// https://api.extensions.envato.com/extensions/item/3617616/download
+  let testBtn = document.getElementById('TEST');
+  testBtn.addEventListener('click', ()=> {
+    fetch('https://api.envato.com/v3/market/buyer/download?item_id=44350138', {
+      method: "GET",
+      headers: {
+        'Authorization': 'Bearer ',
+        "Content-Type": "application/json",
+      },
+      
+    }).then((res)=> {
+      return res.text()
+    })
+    .then((data) => {
+      console.log(data);
+    })
+  })
+
 })();

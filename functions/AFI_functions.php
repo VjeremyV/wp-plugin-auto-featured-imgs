@@ -200,12 +200,13 @@ function AFI_add_apikeys(WP_REST_Request $request){
             );
             $apiKey = $data[0]->clef;
         //informations endpoint API
-        $url = 'https://api.envato.com/v1/discovery/search/search/item?term='.$text.'&site=photodune.net&orientation=landscape&sort_by=relevance';
+        $url = 'https://api.envato.com/v1/discovery/search/search/item?term='.$text.'&site=themeforest.net';
 
         //on renvoie le resultat du call API
         return json_decode(call_API_Envato($url, $apiKey, $text));
 
     }
+
 
 
         /**
@@ -229,4 +230,22 @@ function add_DB()
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
     dbDelta($request);
+}
+
+
+
+function AFI_Envato(){
+    register_rest_route('AFI/v1', '/getEnvato', [
+        'methods' => 'GET', 
+        'callback' => function(){
+            return envato();
+        }
+    ]);
+}
+
+
+
+function envato(){
+    $default = get_current_user_id();
+    return $default;
 }

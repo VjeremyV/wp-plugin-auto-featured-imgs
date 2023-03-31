@@ -33,8 +33,6 @@ wp_enqueue_script('AFI-animation-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
   </div>
   <div id="Container">
     <form id="generateImgs" class="container">
-      <div class="loader"></div>
-      <div class="result_fetch"></div>
       <input type="submit" value="Chercher les articles sans images mises en avant">
     </form>
     <div id="deeplContainer">
@@ -56,4 +54,6 @@ wp_enqueue_script('AFI-animation-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
     <tbody id="missingFeaturedArticlesBody"></tbody>
   </table>
   <div id="messages"></div>
+
+  <button id="TEST">TEST</button>
 </div>

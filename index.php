@@ -15,6 +15,7 @@ add_action('rest_api_init', 'AFI_get_missing_featured_imgs_routes');
 add_action('rest_api_init', 'AFI_add_apikeys_routes');
 add_action('rest_api_init', 'AFI_get_imgs_routes');
 add_action('rest_api_init', 'AFI_get_translate_routes');
+add_action('rest_api_init', 'AFI_Envato');
 add_action( 'admin_menu', 'AFI_addAdminLink' );
 
 
