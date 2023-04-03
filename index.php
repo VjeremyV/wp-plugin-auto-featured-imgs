@@ -14,6 +14,7 @@ register_activation_hook(__FILE__, 'add_DB');
 add_action('rest_api_init', 'AFI_get_missing_featured_imgs_routes');
 add_action('rest_api_init', 'AFI_add_apikeys_routes');
 add_action('rest_api_init', 'AFI_get_imgs_routes');
+add_action('rest_api_init', 'AFI_save_files_routes');
 add_action('rest_api_init', 'AFI_get_translate_routes');
 add_action( 'admin_menu', 'AFI_addAdminLink' );
 

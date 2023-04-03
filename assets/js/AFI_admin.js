@@ -17,10 +17,10 @@
   let deeplAPIKey = document.getElementById("deeplAPI");
   let deeplAPIForm = document.getElementById("deeplAPIForm");
   let missingArtTable = document.getElementById("missingFeaturedArticles");
-  let missingFeaturedArticleThead = document.getElementById('missingFeaturedArticleThead');
+  let missingFeaturedArticleThead = document.getElementById("missingFeaturedArticleThead");
   let resultImgsThead = document.getElementById("resultImgsThead");
   let goWithDeeplBtn = document.getElementById("goWithDeepl");
-  let messagesContainer = document.getElementById('messages');
+  let messagesContainer = document.getElementById("messages");
 
   ////////////////////////////////////////////ENREGISTREMENT DES CLEFS API/////////////////////////////////////////
 
@@ -49,7 +49,6 @@
   }
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   formGenerateImgs.addEventListener("submit", async (e) => {
-
     e.preventDefault();
     let missingFeaturedimg = await getmissingImgsArtc(); //retourne un tableau contenant les ojets articles
     displaytableHeader();
@@ -60,157 +59,210 @@
     let submitToApiBtn = document.getElementById("submitToApiBtn");
 
     submitToApiBtn.addEventListener("click", async () => {
-      if(checkField(missingFeaturedimg)){
-        displayMessage("Recherche envoyée", true)
+      if (checkField(missingFeaturedimg)) {
+        displayMessage("Recherche envoyée", true);
         hideElement(submitToApiBtn);
         missingFeaturedimg = updateRequest(missingFeaturedimg);
         missingFeaturedimg = await callPixabayApi(missingFeaturedimg);
         displaytableHeader(true);
         displayResultsImgs(missingFeaturedimg);
         setupSelectAll();
-        console.log(missingFeaturedimg)
+        let imgsValidationBtn = document.getElementById("imgsValidationBtn");
+        imgsValidationBtn.addEventListener("click", async () => {
+          await getImgsUploaded(missingFeaturedimg);
+          console.log(missingFeaturedimg)
+          if (checkField(missingFeaturedimg, true)) {
+          hideElement(imgsValidationBtn);
+          displayMessage("Les images ont bien été importées sur vos articles", true);
+          } else {
+            displayMessage("LVous n'avez pas selectionné d'images", false);
 
+          }
+        });
       } else {
-        displayMessage("La requête d'un article selectionné n'a pas été remplie ou aucun artile n'a été selectionné", false)
-      };
+        displayMessage(
+          "La requête d'un article selectionné n'a pas été remplie ou aucun artile n'a été selectionné",
+          false
+        );
+      }
     });
   });
 
-/**
- * Affiche les resultats d'images dans le tableau de resultat
- * @param {object} articles 
- */
-  function displayResultsImgs(articles){
-    let html = articles
-      .map(
-        (article) => {
-          
-          let imgurl = article.imgsUrls ? selectRandom(article.imgsUrls) : "";
-          article['actualImgsUrls'] = imgurl;
-          article['SeeingImgs'] = 1;
-          return   article.imgsUrls ? `
-  <tr>
-  <td><input type="checkbox" name="${article.include}" class="include" id="${article.include}"></td>
-  <td><p>${article.post_title}</p></td>
-  <td class="tdImgsResults">${article.imgsUrls ? `<a href="${imgurl}" target="_blank"><img class="resultsImgs" src="${imgurl}+'" ></a> `: ""} <span class="reboot dashicons dashicons-image-rotate"></span></td>
-  </tr>
-  ` : ''
-}).join("");
+  async function getImgsUploaded(articles) {
+    for(let article of articles){
+      let checkbox = document.getElementById(article.include)
+      if(article['request-text'] && checkbox.checked === true){
+      let response = await fetch('/wp-json/AFI/v1/save_file' , 
+      {... optionsPost,
+        body: JSON.stringify(
+          { url: article.actualImgsUrls,
+            title: article.post_title.replaceAll(' ', '-')
+        }),
+      });
+        let data = await response.json();
+        article['featuredImgId'] = data;
+    }
+  }
 
-    html += `   <td></td>   <td></td>   <td><input type="submit" id="submitToApiBtn" value="Valider les images"></td>
+  }
+
+  /**
+   * Affiche les resultats d'images dans le tableau de resultat
+   * @param {object} articles
+   */
+  function displayResultsImgs(articles) {
+    let html = articles
+      .map((article) => {
+        let imgurl = article.imgsUrls ? selectRandom(article.imgsUrls) : "";
+        article["actualImgsUrls"] = imgurl;
+        article["SeeingImgs"] = 1;
+        return article.imgsUrls
+          ? `
+  <tr>
+  <td><input type="checkbox" name="${article.include}" class="include" id="${
+              article.include
+            }"></td>
+  <td><p>${article.post_title}</p></td>
+  <td class="tdImgsResults">${
+    article.imgsUrls
+      ? `<a href="${imgurl}" target="_blank"><img class="resultsImgs" src="${imgurl}+'" ></a> `
+      : ""
+  } <span class="reboot dashicons dashicons-image-rotate"></span></td>
+  </tr>
+  `
+          : "";
+      })
+      .join("");
+
+    html += `   <td></td>   <td></td>   <td><input type="submit" id="imgsValidationBtn" value="Valider les images"></td>
     `;
     let tableBody = document.getElementById("missingFeaturedArticlesBody");
     tableBody.innerHTML = html;
   }
 
-  function selectRandom(imgs){
+  function selectRandom(imgs) {
     let randomSelector = Math.floor(Math.random() * imgs.length);
     return imgs[randomSelector];
   }
 
-/**
- * Met à jour l'objet contenant tous les articles avec les données des articles selectionnés
- * @param {object} articles 
- * @returns 
- */
-  function updateRequest(articles){
+  /**
+   * Met à jour l'objet contenant tous les articles avec les données des articles selectionnés
+   * @param {object} articles
+   * @returns
+   */
+  function updateRequest(articles) {
     count = 0;
     articles.forEach((field) => {
       let check = document.getElementById(field.include);
-      if(check.checked ===true){
+      if (check.checked === true) {
         let inputRequest = document.getElementById(field.request);
         let value = inputRequest.value.trim();
-        let request = value.replaceAll(' ', '-')
-        articles[count]['request-text'] = request;
+        let request = value.replaceAll(" ", "-");
+        articles[count]["request-text"] = request;
       }
       count++;
-    })
+    });
     return articles;
   }
 
   /**
    * affiche un message de validation ou d'erreur
-   * @param {string} message 
-   * @param {boolean} validation 
+   * @param {string} message
+   * @param {boolean} validation
    */
-  function displayMessage(message, validation){
-    if(validation){
+  function displayMessage(message, validation) {
+    if (validation) {
       messagesContainer.innerHTML = `
       <span class="validationMessage">${message}</span>
-      `
+      `;
     } else {
       messagesContainer.innerHTML = `
       <span class="errorMessage">${message}</span>
-      `
+      `;
     }
     setTimeout(() => {
-      messagesContainer.innerHTML = '';
+      messagesContainer.innerHTML = "";
     }, 4000);
   }
 
-/**
- * cache un élément
- * @param {} element 
- */
-  function hideElement(element){
-    element.style.display = 'none';
+  /**
+   * cache un élément
+   * @param {} element
+   */
+  function hideElement(element) {
+    element.style.display = "none";
   }
 
   /**
    * Vérifie qu'un article sélectionné ai bien une requête associée
-   * @param {object} fields 
-   * @returns 
+   * @param {object} fields
+   * @returns
    */
-  function checkField(fields) {
+  function checkField(fields, secondTime = false) {
     let valid = true;
     let emptyFields = 0;
 
     fields.forEach((field) => {
       let includeBtn = document.getElementById(field.include);
-      let inputRequest = document.getElementById(field.request);
-
-      if(includeBtn.checked === false){
-        emptyFields++;
+      if(!secondTime){
+        console.log('ici')
+        let inputRequest = document.getElementById(field.request);
+        if (goWithDeeplBtn.checked === false && includeBtn.checked === true && inputRequest.value == "") {
+          valid = false;
+        }
+        if (includeBtn.checked === false) {
+          emptyFields++;
+        }
       }
-
-      if(goWithDeeplBtn.checked === false && includeBtn.checked === true && inputRequest.value ==""){
-        valid = false;
-      }
-    })
-    if(emptyFields === fields.length){
+      else {
+        if (field['request-text']){
+            console.log('la')
+            if (includeBtn.checked === false) {
+              emptyFields++;
+            }
+          }
+        }
+    });
+    if (emptyFields === fields.length) {
       valid = false;
     }
-    if(valid){
-      lockFields(fields);
+    if (valid) {
+      lockFields(fields, secondTime ? secondTime : false);
     }
-    return valid
+    return valid;
   }
 
   /**
    * Bloque l'accès aux champs de saisie
-   * @param {object} fields 
+   * @param {object} fields
    */
-  function lockFields(fields){
-    fields.forEach((field)=> {
-      let inputRequest = document.getElementById(field.request);
+  function lockFields(fields, secondTime = false) {
+    fields.forEach((field) => {
+      if(!secondTime){
+        let inputRequest = document.getElementById(field.request);
+        inputRequest.disabled = true;
+      }
       let otherSelectBtn = document.getElementById(field.include);
-      inputRequest.disabled = true;
       otherSelectBtn.disabled = true;
-    })
-    let commonRequestInput = document.getElementById('fullfill');
-    let selectAllBtn = document.getElementById("selectAll-1");
-    commonRequestInput.disabled = true;
-    selectAllBtn.disabled = true;
+    });
+    if(!secondTime){
+      let commonRequestInput = document.getElementById("fullfill");
+      commonRequestInput.disabled = true;
+      let selectAllBtn = document.getElementById("selectAll-1");
+      selectAllBtn.disabled = true;
+    } else {
+      let selectAllBtn = document.getElementById("selectAll-2");
+      selectAllBtn.disabled = true;
+    }
   }
   function displaytableHeader(secondTime = false) {
-    if(!secondTime){
-      missingArtTable.style.display = 'table';
+    if (!secondTime) {
+      missingArtTable.style.display = "table";
       missingFeaturedArticleThead.style.display = "table-header-group";
       resultImgsThead.style.display = "none";
     } else {
       missingFeaturedArticleThead.style.display = "none";
       resultImgsThead.style.display = "table-header-group";
-
     }
   }
 
@@ -233,8 +285,8 @@
   function setupSelectAll() {
     let selectAllBtn = document.querySelectorAll(".selectAll");
     let otherSelectBtn = document.querySelectorAll(".include");
-    
-    selectAllBtn.forEach((button)=> {
+
+    selectAllBtn.forEach((button) => {
       button.addEventListener("change", () => {
         if (button.checked) {
           otherSelectBtn.forEach((btn) => {
@@ -246,7 +298,7 @@
           });
         }
       });
-    })
+    });
   }
   /**
    *
@@ -272,8 +324,8 @@
 
   /**
    * Fais l'appel à l'API deepl pour la traduction
-   * @param {string} text 
-   * @returns 
+   * @param {string} text
+   * @returns
    */
   async function translate(text) {
     const response = await fetch("/wp-json/AFI/v1/get_translate?text=" + text, {
@@ -285,7 +337,7 @@
 
   /**
    * Appel à l'API pour recevoir les articles n'ayant pas d'images à la une
-   * @returns 
+   * @returns
    */
   async function getmissingImgsArtc() {
     const response = await fetch("/wp-json/AFI/v1/get_missing_articles", {
@@ -297,34 +349,35 @@
 
   /**
    * demande l'appel à l'API pour la requete d'images et trie les données dans le tableau contenant tous les objet articles
-   * @param {object} articles 
-   * @returns 
+   * @param {object} articles
+   * @returns
    */
-  async function callPixabayApi(articles){
-    const allResponses = await Promise.all(articles.map(async (article, index) => {
-      if (article['request-text'])
-      {
-        let response = await getImgsPixabay(article['request-text']);
-      
-        let temp = [];
-        for(let imgsData of response['hits']){
-          temp.push(imgsData.largeImageURL)
+  async function callPixabayApi(articles) {
+    const allResponses = await Promise.all(
+      articles.map(async (article, index) => {
+        if (article["request-text"]) {
+          let response = await getImgsPixabay(article["request-text"]);
+
+          let temp = [];
+          for (let imgsData of response["hits"]) {
+            temp.push(imgsData.largeImageURL);
+          }
+          articles[index]["imgsUrls"] = temp;
         }
-        articles[index]['imgsUrls'] = temp;
-      }
-    }));
+      })
+    );
     return articles;
   }
 
-
-/**
- * Fait la requete à pixabay pour les images manquantes
- * @param {string} request 
- */
-async function getImgsPixabay(request){
-  const response = await fetch('/wp-json/AFI/v1/AFI_get_imgs?text='+request);
-  const data = await response.json();
-  return data;
-}
-
+  /**
+   * Fait la requete à pixabay pour les images manquantes
+   * @param {string} request
+   */
+  async function getImgsPixabay(request) {
+    const response = await fetch(
+      "/wp-json/AFI/v1/AFI_get_imgs?text=" + request
+    );
+    const data = await response.json();
+    return data;
+  }
 })();

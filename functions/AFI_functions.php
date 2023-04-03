@@ -1,5 +1,6 @@
 <?php
 include_once(__DIR__.'/Request_API.php');
+include_once(__DIR__.'/AFI_file.php');
 /**
  * ajoute mon menu au panneau d'admin de WP
  *
@@ -65,7 +66,48 @@ function AFI_add_apikeys_routes(){
 
     ]);
 }
+/**
+ * On ajoute la route pour trouver sauvegarder les fichiers
+ *
+ * @return void
+ */
+function AFI_save_files_routes(){
+    register_rest_route('AFI/v1', '/save_file', [
+        'methods' => 'POST', 
+        'callback' => 'save_file',
+        'args'=>array(
+            'url'=>array(
+                'type'=>'string',
+                'required'=> true,
+                'validate_callback'=>function($param){
+                    if(empty($param)){
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            ),
+            'title'=>array(
+                'type'=>'string',
+                'required'=> true,
+                'validate_callback'=>function($param){
+                    if(empty($param)){
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            )
+        )
 
+    ]);
+}
+
+/**
+ * route qui permet d'appeler l'API de recherche d'images
+ *
+ * @return void
+ */
 function AFI_get_imgs_routes(){
     register_rest_route('AFI/v1', '/AFI_get_imgs', [
         'methods' => 'GET', 
@@ -83,6 +125,11 @@ function AFI_get_imgs_routes(){
     ]);
 }
 
+/**
+ * route pour appeler l'API de traduction
+ *
+ * @return void
+ */
 function AFI_get_translate_routes(){
     register_rest_route('AFI/v1', '/get_translate', [
         'methods' => 'GET', 
@@ -100,7 +147,11 @@ function AFI_get_translate_routes(){
     ]);
 }
 
-
+/**
+ * prepare le call API de traduction
+ *
+ * @return void
+ */
 function get_translate(){
     $text = $_GET['text'];
     global $wpdb;
@@ -118,7 +169,11 @@ function get_translate(){
 
 
 
-
+/**
+ * Récupère les articles sans images à la une
+ *
+ * @return void
+ */
 function AFI_get_missing_featured_imgs_articles (){
     global $wpdb;
 //SELECT * FROM `wp_posts` as p WHERE NOT EXISTS (select *  from `wp_postmeta` as m where m.post_id=p.ID and  meta_key = '_thumbnail_id') and `post_type`="post" AND post_date_gmt != '0000-00-00 00:00:00';
@@ -147,7 +202,6 @@ function AFI_add_apikeys(WP_REST_Request $request){
     global $wpdb;
     $params= $request->get_params();
     $service = htmlspecialchars($params['service']);
-    // return $service;
     $clef = htmlspecialchars($params['clef']);
     
     $req = "SELECT * FROM ". $wpdb->prefix . 'wa_AFI_keys' ." WHERE `service` = '".$service."'";
@@ -229,4 +283,13 @@ function add_DB()
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
     dbDelta($request);
+}
+
+function save_file(WP_REST_Request $request){
+    $params= $request->get_params();
+    $image_url = htmlspecialchars($params['url']);
+    $image_title = htmlspecialchars($params['title']);
+
+    return json_encode(Upload_file($image_url, $image_title));
+
 }
