@@ -11,12 +11,12 @@ wp_enqueue_script('AFI-animation-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
   <h1>Iron-mage</h1>
   <h2>Clés API</h2>
   <div id="apiKeysContainer">
-    <form id="envatoAPIForm">
-      <h3>Envato</h3>
-      <input type="password" name="envatoAPI" id="envatoAPI">
+    <form id="pixabayAPIForm">
+      <h3>Pixabay</h3>
+      <input type="password" name="pixabayAPI" id="pixabayAPI">
       <div class="showPwd">
-        <input type="checkbox" id="showpwdEnvato">
-        <label for="showpwdEnvato">Voir la clé</label>
+        <input type="checkbox" id="showpwdPixabay">
+        <label for="showpwdPixabay">Voir la clé</label>
       </div>
       <input type="submit" value="mettre à jour">
 
@@ -41,19 +41,29 @@ wp_enqueue_script('AFI-animation-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
     </div>
   </div>
   <table id="missingFeaturedArticles">
-    <thead>
+    <thead id="missingFeaturedArticleThead">
       <tr>
         <th>
-          <input type="checkbox" name="selectAll" id="selectAll">
+          <input type="checkbox" name="selectAll" id="selectAll-1" class='selectAll'>
           <label for="selectAll">Selectionner tous les articles</label>
         </th>
         <th> H1 des articles </th>
         <th><input type="text" name="fullfill" id="fullfill" placeholder="requête commune"></th>
       </tr>
     </thead>
+    <thead id="resultImgsThead">
+      <tr>
+        <th>
+          <input type="checkbox" name="selectAll" id="selectAll-2" class='selectAll'>
+          <label for="selectAll">Selectionner tous les articles</label>
+        </th>
+        <th> H1 des articles </th>
+        <th>Images trouvées</th>
+      </tr>
+    </thead>
     <tbody id="missingFeaturedArticlesBody"></tbody>
   </table>
   <div id="messages"></div>
 
-  <button id="TEST">TEST</button>
+  <!-- <button id="TEST">TEST</button> -->
 </div>

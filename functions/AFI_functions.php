@@ -1,6 +1,5 @@
 <?php
 include_once(__DIR__.'/Request_API.php');
-define('AFI_DBNAME', $wpdb->prefix . 'wa_AFI_keys');
 /**
  * ajoute mon menu au panneau d'admin de WP
  *
@@ -105,7 +104,7 @@ function AFI_get_translate_routes(){
 function get_translate(){
     $text = $_GET['text'];
     global $wpdb;
-        $request = 'SELECT *  FROM '. AFI_DBNAME. ' WHERE `service` = \'deepl\'';
+        $request = 'SELECT *  FROM '.$wpdb->prefix . 'wa_AFI_keys'. ' WHERE `service` = \'deepl\'';
         $data= $wpdb->get_results(
             $wpdb->prepare($request)
         );
@@ -151,12 +150,12 @@ function AFI_add_apikeys(WP_REST_Request $request){
     // return $service;
     $clef = htmlspecialchars($params['clef']);
     
-    $req = "SELECT * FROM ". AFI_DBNAME ." WHERE `service` = '".$service."'";
+    $req = "SELECT * FROM ". $wpdb->prefix . 'wa_AFI_keys' ." WHERE `service` = '".$service."'";
     $result= $wpdb->get_results(
         $wpdb->prepare($req)
     );
     if(count($result) > 0){        
-        if($wpdb->update(AFI_DBNAME, [
+        if($wpdb->update($wpdb->prefix . 'wa_AFI_keys', [
             'clef'=>$clef]
             , ['id' => $result[0]->id])      
             ){
@@ -168,7 +167,7 @@ function AFI_add_apikeys(WP_REST_Request $request){
     } else {
         if($wpdb->query(
             $wpdb->prepare(
-            "INSERT INTO ". AFI_DBNAME."
+            "INSERT INTO ". $wpdb->prefix . 'wa_AFI_keys'."
             (service, clef)
             VALUES ( %s, %s)",
                   $service,
@@ -183,7 +182,7 @@ function AFI_add_apikeys(WP_REST_Request $request){
 
 }
     /**
-     * récupère les images sur envato
+     * récupère les images sur pixabay
      *
      * @param [string] $text
      * @return mixed
@@ -192,18 +191,18 @@ function AFI_add_apikeys(WP_REST_Request $request){
         global $wpdb;
 
         $text = $_GET['text'];
-        $text = str_replace(' ', '-', $text);
+        $text = str_replace(' ', '+', $text);
         //informations endpoint API
-            $request = 'SELECT *  FROM '. AFI_DBNAME. ' WHERE `service` = \'envato\'';
+            $request = 'SELECT *  FROM '. $wpdb->prefix . 'wa_AFI_keys'. ' WHERE `service` = \'pixabay\'';
             $data= $wpdb->get_results(
                 $wpdb->prepare($request)
             );
             $apiKey = $data[0]->clef;
         //informations endpoint API
-        $url = 'https://api.envato.com/v1/discovery/search/search/item?term='.$text.'&site=themeforest.net';
+        $url = 'https://pixabay.com/api/?key='.$apiKey.'&q='.$text;
 
         //on renvoie le resultat du call API
-        return json_decode(call_API_Envato($url, $apiKey, $text));
+        return json_decode(call_API_Pixabay($url));
 
     }
 
@@ -230,22 +229,4 @@ function add_DB()
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
     dbDelta($request);
-}
-
-
-
-function AFI_Envato(){
-    register_rest_route('AFI/v1', '/getEnvato', [
-        'methods' => 'GET', 
-        'callback' => function(){
-            return envato();
-        }
-    ]);
-}
-
-
-
-function envato(){
-    $default = get_current_user_id();
-    return $default;
 }

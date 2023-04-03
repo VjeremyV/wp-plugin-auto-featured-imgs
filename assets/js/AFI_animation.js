@@ -1,9 +1,9 @@
 (()=> {
-    let showpwdBtnEnvato = document.getElementById('showpwdEnvato');
+    let showpwdPixabay = document.getElementById('showpwdPixabay');
     let showpwdBtnDeepl = document.getElementById('showpwddeepl');
 
-    showpwdBtnEnvato.addEventListener('click', ()=> {
-        showpwd("envatoAPI");
+    showpwdPixabay.addEventListener('click', ()=> {
+        showpwd("pixabayAPI");
     })
     showpwdBtnDeepl.addEventListener('click', ()=> {
         showpwd("deeplAPI");
