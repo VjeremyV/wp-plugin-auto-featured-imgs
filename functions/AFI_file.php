@@ -57,5 +57,17 @@ function Upload_file(string $image_url, string $image_title) {
 		$attachment_id,
 		wp_generate_attachment_metadata( $attachment_id, $sideload[ 'file' ] )
 	);
-	return $attachment_id;
+
+	$directory = explode('/', $sideload[ 'file' ]);
+    $file = array_pop($directory);
+
+
+	$response = [
+		'fileName' => $file,
+		'directory' => $directory,
+		'id'=> $attachment_id,
+		'filename' => $image_title.'.jpg'
+ ];
+
+	return $response ;
 }

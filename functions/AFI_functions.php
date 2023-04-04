@@ -125,49 +125,6 @@ function AFI_get_imgs_routes(){
     ]);
 }
 
-/**
- * route pour appeler l'API de traduction
- *
- * @return void
- */
-function AFI_get_translate_routes(){
-    register_rest_route('AFI/v1', '/get_translate', [
-        'methods' => 'GET', 
-        'callback' => function(){
-            return get_translate();
-        },
-        'args'=> [
-            'text' => [
-                'required'=> true,
-                'type'=> 'string',
-                'description'=> esc_html__('requete de recherche'),
-                'sanitize_callback'=> 'sanitize_text_field'
-            ]
-        ]
-    ]);
-}
-
-/**
- * prepare le call API de traduction
- *
- * @return void
- */
-function get_translate(){
-    $text = $_GET['text'];
-    global $wpdb;
-        $request = 'SELECT *  FROM '.$wpdb->prefix . 'wa_AFI_keys'. ' WHERE `service` = \'deepl\'';
-        $data= $wpdb->get_results(
-            $wpdb->prepare($request)
-        );
-        $apiKey = $data[0]->clef;
-    //informations endpoint API
-    $url = 'https://api-free.deepl.com/v2/translate';
-
-    //on renvoie le resultat du call API
-    return json_decode(call_API_Deepl($url, $apiKey, $text));
-}
-
-
 
 /**
  * Récupère les articles sans images à la une
@@ -176,7 +133,6 @@ function get_translate(){
  */
 function AFI_get_missing_featured_imgs_articles (){
     global $wpdb;
-//SELECT * FROM `wp_posts` as p WHERE NOT EXISTS (select *  from `wp_postmeta` as m where m.post_id=p.ID and  meta_key = '_thumbnail_id') and `post_type`="post" AND post_date_gmt != '0000-00-00 00:00:00';
     $request = 'SELECT ID, post_title  FROM '. $wpdb->prefix . 'posts as p WHERE NOT EXISTS (SELECT *  FROM '.$wpdb->prefix .'postmeta as m where m.post_id=p.ID and  meta_key = \'_thumbnail_id\') and `post_type`="post" AND post_status != \'auto-draft\';';
     $data= $wpdb->get_results(
         $wpdb->prepare($request)
@@ -204,9 +160,9 @@ function AFI_add_apikeys(WP_REST_Request $request){
     $service = htmlspecialchars($params['service']);
     $clef = htmlspecialchars($params['clef']);
     
-    $req = "SELECT * FROM ". $wpdb->prefix . 'wa_AFI_keys' ." WHERE `service` = '".$service."'";
+    $req = "SELECT * FROM ". $wpdb->prefix . 'wa_AFI_keys' ." WHERE `service` = %s";
     $result= $wpdb->get_results(
-        $wpdb->prepare($req)
+        $wpdb->prepare($req, $service)
     );
     if(count($result) > 0){        
         if($wpdb->update($wpdb->prefix . 'wa_AFI_keys', [
@@ -214,23 +170,17 @@ function AFI_add_apikeys(WP_REST_Request $request){
             , ['id' => $result[0]->id])      
             ){
                 
-                return 'la cle API a bien été mise à jour';   
+                return 'maj';   
             } else {
-                return 'la cle API n\'a pas pu être mise à jour';
+                return 'fail';
             }
     } else {
         if($wpdb->query(
-            $wpdb->prepare(
-            "INSERT INTO ". $wpdb->prefix . 'wa_AFI_keys'."
-            (service, clef)
-            VALUES ( %s, %s)",
-                  $service,
-                  $clef,           
-            )
+            $wpdb->prepare("INSERT INTO ". $wpdb->prefix . 'wa_AFI_keys'." (service, clef) VALUES ( %s, %s)", $service, $clef)
             )){
-                return 'la cle API a bien été créée';  
+                return 'creation';  
             } else {
-                return 'un problème est survenu lors de l\'enregistrement sur le serveur';
+                return 'fail';
             }
     }
 
@@ -289,7 +239,15 @@ function save_file(WP_REST_Request $request){
     $params= $request->get_params();
     $image_url = htmlspecialchars($params['url']);
     $image_title = htmlspecialchars($params['title']);
+    $post_id = htmlspecialchars($params['post_id']);
+    $file = Upload_file($image_url, $image_title);
+    global $wpdb;
 
-    return json_encode(Upload_file($image_url, $image_title));
+
+    $request = "INSERT INTO `wp_postmeta` (`post_id`, `meta_key`, `meta_value`) VALUES ( %s,'_thumbnail_id', %s)";
+    $data= $wpdb->get_results(
+        $wpdb->prepare($request, $post_id, $file['id'])
+    );
+    return json_encode($file['id']);
 
 }
