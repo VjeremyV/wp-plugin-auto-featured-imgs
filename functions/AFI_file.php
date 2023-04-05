@@ -1,10 +1,13 @@
 <?php
+$temp_name= '';
 /**
  * 
  *
  */
-function Upload_file(string $image_url, string $image_title) {
-
+ function Upload_file(string $image_url, string $image_title) {
+	global $temp_name; 
+	$image_title = preg_replace('/[^A-Za-z0-9\-]/', '', $image_title);
+	$temp_name= $image_title;
 	// it allows us to use download_url() and wp_handle_sideload() functions
 	require_once( ABSPATH . 'wp-admin/includes/file.php' );
 
@@ -20,13 +23,14 @@ function Upload_file(string $image_url, string $image_title) {
 		'name'     => basename( $image_url ),
 		'type'     => mime_content_type( $temp_file ),
 		'tmp_name' => $temp_file,
-		'size'     => filesize( $temp_file ),
-	);
+		'size'     => filesize( $temp_file )
+		);
 	$sideload = wp_handle_sideload(
 		$file,
 		array(
-			'test_form'   => false // no needs to check 'action' parameter
-		)
+			'test_form'   => false, // no needs to check 'action' prameter
+			'unique_filename_callback' => 'get_new_filename'
+			)
 	);
 
 	if( ! empty( $sideload[ 'error' ] ) ) {
@@ -70,4 +74,17 @@ function Upload_file(string $image_url, string $image_title) {
  ];
 
 	return $response ;
+}
+
+ function get_new_filename(){
+	global $temp_name;
+	return $temp_name.'.jpg';
+}
+
+
+function deleteSpecialChar(string $str){
+	// remplacer tous les caractères spéciaux par une chaîne vide
+    $res = str_replace( array( '%', '@', '\'', ';', '<', '>', ':', '"', ',' , '!', '?', '&' ), '', $str);
+      
+    return $res;
 }

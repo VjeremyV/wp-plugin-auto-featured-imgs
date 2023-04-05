@@ -1,6 +1,6 @@
 import { setupCommonRequest, setupSelectAll, checkField, lockFields, updateRequest  } from './AFI_Setup.js'
 import { addApiInDb, getImgsUploaded, getmissingImgsArtc, callPixabayApi, getImgsPixabay  } from './AFI_API.js'
-import { displayResultsImgs, selectRandom, displayMessage, hideElement, displaytableHeader, displayMissingArticles } from './AFI_Display.js'
+import { displayResultsImgs, selectRandom, displayMessage, hideElement, displaytableHeader, displayMissingArticles, displayEndScreen } from './AFI_Display.js'
 (() => {
   let options = {
     method: "GET",
@@ -21,7 +21,7 @@ import { displayResultsImgs, selectRandom, displayMessage, hideElement, displayt
   let missingFeaturedArticleThead = document.getElementById("missingFeaturedArticleThead");
   let resultImgsThead = document.getElementById("resultImgsThead");
   let messagesContainer = document.getElementById("messages");
-
+  let endScreen = document.querySelector('.endScreen');
   ////////////////////////////////////////////ENREGISTREMENT DES CLEFS API/////////////////////////////////////////
 
   pixabayAPIForm.addEventListener("submit", async (e) => {
@@ -47,12 +47,12 @@ import { displayResultsImgs, selectRandom, displayMessage, hideElement, displayt
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   formGenerateImgs.addEventListener("submit", async (e) => {
     e.preventDefault();
+    endScreen.innerHTML= "";
     let missingFeaturedimg = await getmissingImgsArtc(options); //retourne un tableau contenant les ojets articles
     displaytableHeader(missingArtTable, missingFeaturedArticleThead, resultImgsThead);
     displayMissingArticles(missingFeaturedimg);
     setupCommonRequest();
     setupSelectAll();
-
     let submitToApiBtn = document.getElementById("submitToApiBtn");
 
     submitToApiBtn.addEventListener("click", async () => {
@@ -63,12 +63,17 @@ import { displayResultsImgs, selectRandom, displayMessage, hideElement, displayt
         missingFeaturedimg = await callPixabayApi(missingFeaturedimg);
         displaytableHeader(missingArtTable, missingFeaturedArticleThead, resultImgsThead, true);
         displayResultsImgs(missingFeaturedimg);
+        console.log(missingFeaturedimg)
+
         setupSelectAll();
         let imgsValidationBtn = document.getElementById("imgsValidationBtn");
         imgsValidationBtn.addEventListener("click", async () => {
           if (checkField(missingFeaturedimg, true)) {
             hideElement(imgsValidationBtn);
             await getImgsUploaded(missingFeaturedimg, optionsPost);
+            console.log(missingFeaturedimg)
+            displayEndScreen(missingArtTable, endScreen, missingFeaturedimg);
+         
             displayMessage("Les images ont bien été importées sur vos articles",true ,messagesContainer);
           } else {
             displayMessage("Vous n'avez pas selectionné d'images", false, messagesContainer);

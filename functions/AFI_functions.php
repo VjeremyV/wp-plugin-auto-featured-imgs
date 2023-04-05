@@ -97,7 +97,18 @@ function AFI_save_files_routes(){
                         return true;
                     }
                 }
-            )
+            ),
+            'post_id'=>array(
+                'type'=>'string',
+                'required'=> true,
+                'validate_callback'=>function($param){
+                    if(empty($param)){
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            ),
         )
 
     ]);
@@ -133,7 +144,7 @@ function AFI_get_imgs_routes(){
  */
 function AFI_get_missing_featured_imgs_articles (){
     global $wpdb;
-    $request = 'SELECT ID, post_title  FROM '. $wpdb->prefix . 'posts as p WHERE NOT EXISTS (SELECT *  FROM '.$wpdb->prefix .'postmeta as m where m.post_id=p.ID and  meta_key = \'_thumbnail_id\') and `post_type`="post" AND post_status != \'auto-draft\';';
+    $request = 'SELECT ID, post_title, guid  FROM '. $wpdb->prefix . 'posts as p WHERE NOT EXISTS (SELECT *  FROM '.$wpdb->prefix .'postmeta as m where m.post_id=p.ID and  meta_key = \'_thumbnail_id\') and `post_type`="post" AND post_status != \'auto-draft\';';
     $data= $wpdb->get_results(
         $wpdb->prepare($request)
     );

@@ -28,7 +28,6 @@ async function addApiInDb(apiKey, apiName, optionsPost) {
             });
             let data = await response.json();
             article["featuredImgId"] = data;
-            console.log(data)
           }
         }
       }

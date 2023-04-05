@@ -1,9 +1,7 @@
 <?php
-
-
 wp_enqueue_style('AFI-css-admin', trailingslashit(PLUG_DIR) . 'assets/css/AFI_admin.css', false, '1.0', 'all');
-// wp_enqueue_script('AFI-admin-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI_admin.js', [], true);
 wp_enqueue_script('AFI-animation-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI_animation.js', [], true);
+wp_enqueue_script('AFI-accordion-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI_accordion.js', [], true);
 
 
 
@@ -11,8 +9,8 @@ wp_enqueue_script('AFI-animation-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
 
 <div class="wrap">
   <h1>Iron-mage</h1>
-  <h2>Clé API</h2>
-  <div id="apiKeysContainer">
+  <h2 class="accordion">Clé API <span id="accordionIcon" class="dashicons dashicons-arrow-down-alt2"></span></h2>
+  <div id="apiKeysContainer" class="panel">
     <form id="pixabayAPIForm">
       <h3>Pixabay</h3>
       <input type="password" name="pixabayAPI" id="pixabayAPI">
@@ -28,6 +26,7 @@ wp_enqueue_script('AFI-animation-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
       <input type="submit" value="Chercher les articles sans images mises en avant">
     </form>
   </div>
+  <div class="endScreen"></div>
   <table id="missingFeaturedArticles">
     <thead id="missingFeaturedArticleThead">
       <tr>

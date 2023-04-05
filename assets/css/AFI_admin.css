@@ -1,15 +1,17 @@
+h2 {
+    text-align: center;
+    font-size: 22px; 
+    color :#2626f1;
+}
 #apiKeysContainer{
-    display: flex;
     align-items: center;
-
     justify-content: start;
     flex-wrap: wrap;
 }
 
 #apiKeysContainer form{
-    margin: 30px;
+    margin: auto;
     margin-top: 0;
-    margin-right: 75px;
     display: flex;
     flex-direction: column;
 }
@@ -38,8 +40,13 @@
 
 #missingFeaturedArticles, #missingFeaturedArticles th, #missingFeaturedArticles td{
     border-collapse: collapse;
-    padding-bottom: 10px;
+    padding: 20px;
     text-align: center;
+}
+
+#missingFeaturedArticles td {
+    border-top: 1px solid black;
+
 }
 
 .validationMessage{
@@ -48,6 +55,18 @@
     border-radius: 10px;
     padding: 10px 15px;
 
+}
+
+#generateImgs input[type=submit]{
+    border-radius: 10px;
+    padding: 10px 15px;
+    color: white;
+    background: #2626f1;
+    border: 1px solid #2626f1;
+    cursor: pointer;
+}
+#generateImgs{
+    margin: auto;
 }
 
 .errorMessage{
@@ -69,6 +88,7 @@
     align-items: center;
 }
 #Container{
+    margin-top: 30px;
     display: flex;
     align-items: center;
 }
@@ -98,3 +118,60 @@ display: none;
 .reboot{
     cursor: pointer;
 }
+
+.resultContainer img {
+    width: 250px;
+}
+
+.resultContainer div {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    align-items: baseline;
+}
+
+.resultContainer h3 {
+    text-align: center;
+    color: rgba(17, 158, 17, 0.678);
+    font-weight: bold;
+    font-size: 22px;
+}
+.resultContainer div  a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #bbb3b3;
+}
+
+
+.accordion {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    outline: none;
+    transition: 0.4s;
+  }
+  
+  #pixabayAPIForm{
+    margin: auto;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+  .active, .accordion:hover {
+    background-color: #ccc;
+  }
+  
+  /* Style the accordion panel. Note: hidden by default */
+  .panel {
+    padding: 0 18px;
+    background-color: white;
+    display: none;
+    overflow: hidden;
+  }

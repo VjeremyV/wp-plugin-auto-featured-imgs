@@ -1,4 +1,4 @@
-export { displayResultsImgs, selectRandom, displayMessage, hideElement, displaytableHeader, displayMissingArticles}
+export { displayResultsImgs, selectRandom, displayMessage, hideElement, displaytableHeader, displayMissingArticles, displayEndScreen}
 
 
 
@@ -115,3 +115,27 @@ export { displayResultsImgs, selectRandom, displayMessage, hideElement, displayt
     let tableBody = document.getElementById("missingFeaturedArticlesBody");
     tableBody.innerHTML = html;
   }
+
+/**
+ * 
+ * @param {*} table 
+ * @param {*} articles 
+ */
+  function displayEndScreen(table, endScreenTag, articles){
+    table.style.display = 'none';
+    let html = '<div class="resultContainer"><h3>Nouvelles images mises en avant importées</h3><div>';
+    
+    html += articles.map((article) => {
+      return article.imgsUrls ? `
+      <a target="_blank" href="${article.guid}">
+      <img src="${article.actualImgsUrls}">
+      <h4>${article.post_title}</h4>
+      </a>
+      ` : ""
+    }).join('');
+    html+= '</div></div>'
+    endScreenTag.innerHTML = html;
+  }
+
+  
+  
