@@ -57,7 +57,13 @@ h2 {
 
 }
 
-#generateImgs input[type=submit]{
+.endscreen {
+    padding-bottom: 50px;
+}
+#message{
+    padding: 50px;
+}
+#generateImgs input[type=submit], #imgsValidationBtn, #submitToApiBtn{
     border-radius: 10px;
     padding: 10px 15px;
     color: white;
@@ -121,6 +127,8 @@ display: none;
 
 .resultContainer img {
     width: 250px;
+    height: 175px;
+object-fit: cover;
 }
 
 .resultContainer div {

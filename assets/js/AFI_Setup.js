@@ -1,4 +1,4 @@
-export { setupCommonRequest, setupSelectAll, checkField, lockFields, updateRequest }
+export { setupCommonRequest, setupSelectAll, checkField, lockFields, updateRequest, unlockFields }
 
 
   /**
@@ -108,6 +108,15 @@ export { setupCommonRequest, setupSelectAll, checkField, lockFields, updateReque
       let selectAllBtn = document.getElementById("selectAll-2");
       selectAllBtn.disabled = true;
     }
+  }
+
+  function unlockFields(){
+    let selectAllBTN = document.getElementById('selectAll-1');
+    let commonRequestInput = document.getElementById('fullfill');
+    commonRequestInput.disabled = false;
+    commonRequestInput.value = "";
+    selectAllBTN.disabled = false;
+    selectAllBTN.checked = false;
   }
 
    /**

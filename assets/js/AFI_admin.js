@@ -1,4 +1,4 @@
-import { setupCommonRequest, setupSelectAll, checkField, lockFields, updateRequest  } from './AFI_Setup.js'
+import { setupCommonRequest, setupSelectAll, checkField, lockFields, updateRequest, unlockFields  } from './AFI_Setup.js'
 import { addApiInDb, getImgsUploaded, getmissingImgsArtc, callPixabayApi, getImgsPixabay  } from './AFI_API.js'
 import { displayResultsImgs, selectRandom, displayMessage, hideElement, displaytableHeader, displayMissingArticles, displayEndScreen } from './AFI_Display.js'
 (() => {
@@ -22,12 +22,12 @@ import { displayResultsImgs, selectRandom, displayMessage, hideElement, displayt
   let resultImgsThead = document.getElementById("resultImgsThead");
   let messagesContainer = document.getElementById("messages");
   let endScreen = document.querySelector('.endScreen');
+  let selectedImgs = [];
   ////////////////////////////////////////////ENREGISTREMENT DES CLEFS API/////////////////////////////////////////
 
   pixabayAPIForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     let response = await addApiInDb(pixabayAPIKey.value, "pixabay", optionsPost);
-    console.log(response)
     switch (response) {
       case '"maj"' : 
       displayMessage('La clef API a bien été mise à jour', true, messagesContainer);
@@ -49,6 +49,7 @@ import { displayResultsImgs, selectRandom, displayMessage, hideElement, displayt
     e.preventDefault();
     endScreen.innerHTML= "";
     let missingFeaturedimg = await getmissingImgsArtc(options); //retourne un tableau contenant les ojets articles
+    unlockFields();
     displaytableHeader(missingArtTable, missingFeaturedArticleThead, resultImgsThead);
     displayMissingArticles(missingFeaturedimg);
     setupCommonRequest();
@@ -62,8 +63,17 @@ import { displayResultsImgs, selectRandom, displayMessage, hideElement, displayt
         missingFeaturedimg = updateRequest(missingFeaturedimg);
         missingFeaturedimg = await callPixabayApi(missingFeaturedimg);
         displaytableHeader(missingArtTable, missingFeaturedArticleThead, resultImgsThead, true);
-        displayResultsImgs(missingFeaturedimg);
-        console.log(missingFeaturedimg)
+        displayResultsImgs(missingFeaturedimg, selectedImgs);
+        let rebootBtns = document.querySelectorAll('.reboot');
+        rebootBtns.forEach((btn)=> {
+          btn.addEventListener('click', ()=> {
+            let article = missingFeaturedimg[btn.getAttribute('id')]
+            let linkTag = document.getElementById('link-'+btn.getAttribute('id'))
+            let newLink = selectRandom(article.imgsUrls).url
+            linkTag.innerHTML = `<img class="resultsImgs" src="${newLink}+'" >`
+            article.actualImgsUrls = newLink
+          })
+        })
 
         setupSelectAll();
         let imgsValidationBtn = document.getElementById("imgsValidationBtn");
@@ -71,7 +81,6 @@ import { displayResultsImgs, selectRandom, displayMessage, hideElement, displayt
           if (checkField(missingFeaturedimg, true)) {
             hideElement(imgsValidationBtn);
             await getImgsUploaded(missingFeaturedimg, optionsPost);
-            console.log(missingFeaturedimg)
             displayEndScreen(missingArtTable, endScreen, missingFeaturedimg);
          
             displayMessage("Les images ont bien été importées sur vos articles",true ,messagesContainer);
@@ -84,4 +93,5 @@ import { displayResultsImgs, selectRandom, displayMessage, hideElement, displayt
       }
     });
   });
+
 })();
