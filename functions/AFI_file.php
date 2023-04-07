@@ -4,7 +4,7 @@ $temp_name= '';
  * 
  *
  */
- function Upload_file(string $image_url, string $image_title) {
+ function Upload_file(string $image_url, string $image_title, string $post_id) {
 	global $temp_name; 
 	$image_title = preg_replace('/[^A-Za-z0-9\-]/', '', $image_title);
 	$temp_name= $image_title;
@@ -47,7 +47,7 @@ $temp_name= '';
 			'post_content'   => '',
 			'post_status'    => 'inherit',
 		),
-		$sideload[ 'file' ]
+		$sideload[ 'file' ], $post_id 
 	);
 
 	if( is_wp_error( $attachment_id ) || ! $attachment_id ) {
@@ -61,6 +61,11 @@ $temp_name= '';
 		$attachment_id,
 		wp_generate_attachment_metadata( $attachment_id, $sideload[ 'file' ] )
 	);
+
+
+	//ajout du lien entre l'image et l'article pour que l'image soit à la une de l'article
+	global $wpdb;
+	$wpdb->insert($wpdb->prefix.'postmeta', array('post_id' => $post_id, 'meta_key' => '_thumbnail_id', 'meta_value' => $attachment_id));
 
 	$directory = explode('/', $sideload[ 'file' ]);
     $file = array_pop($directory);

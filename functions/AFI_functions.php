@@ -200,9 +200,9 @@ function AFI_add_apikeys(WP_REST_Request $request){
      * récupère les images sur pixabay
      *
      * @param [string] $text
-     * @return mixed
+     * 
      */
-    function GetImgs():mixed{
+    function GetImgs(){
         global $wpdb;
 
         $text = $_GET['text'];
@@ -251,14 +251,8 @@ function save_file(WP_REST_Request $request){
     $image_url = htmlspecialchars($params['url']);
     $image_title = htmlspecialchars($params['title']);
     $post_id = htmlspecialchars($params['post_id']);
-    $file = Upload_file($image_url, $image_title);
-    global $wpdb;
-
-
-    $request = "INSERT INTO `wp_postmeta` (`post_id`, `meta_key`, `meta_value`) VALUES ( %s,'_thumbnail_id', %s)";
-    $data= $wpdb->get_results(
-        $wpdb->prepare($request, $post_id, $file['id'])
-    );
+    $file = Upload_file($image_url, $image_title, $post_id);
     return json_encode($file['id']);
+    
 
 }
