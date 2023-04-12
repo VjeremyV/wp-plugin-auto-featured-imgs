@@ -1,41 +1,4 @@
-export { setupCommonRequest, setupSelectAll, checkField, lockFields, updateRequest, unlockFields }
-
-
-  /**
-   * lorsque l'utilisateur renseigne l'input "requête commune" il remplace tous les autres champs de requete par la valeur de ce champs
-   */
-  function setupCommonRequest() {
-    let commonRequestInput = document.getElementById("fullfill");
-    let othersRequestInput = document.querySelectorAll(".requestInputs");
-    commonRequestInput.addEventListener("input", (e) => {
-      othersRequestInput.forEach((input) => {
-        input.value = e.target.value;
-      });
-    });
-  }
-
-  
-  /**
-   * lorsque l'utilisateur clique sur la checkbox "Selectionner tous les articles" il remplace toutes les autres valeurs des boutons select par celle de ce bouton
-   */
-  function setupSelectAll() {
-    let selectAllBtn = document.querySelectorAll(".selectAll");
-    let otherSelectBtn = document.querySelectorAll(".include");
-
-    selectAllBtn.forEach((button) => {
-      button.addEventListener("change", () => {
-        if (button.checked) {
-          otherSelectBtn.forEach((btn) => {
-            btn.checked = true;
-          });
-        } else {
-          otherSelectBtn.forEach((btn) => {
-            btn.checked = false;
-          });
-        }
-      });
-    });
-  }
+export { checkField, lockFields, updateRequest, unlockFields, setupCategories }
 
   /**
    * Vérifie qu'un article sélectionné ai bien une requête associée
@@ -137,4 +100,16 @@ export { setupCommonRequest, setupSelectAll, checkField, lockFields, updateReque
       count++;
     });
     return articles;
+  }
+
+
+  function setupCategories(articles){
+    let result = [];
+    articles.forEach((article) => {
+      if(result.indexOf(article.category) === -1){
+        result.push(article.category)
+      }
+    })
+
+    return result;
   }

@@ -1,6 +1,7 @@
-import { setupCommonRequest, setupSelectAll, checkField, lockFields, updateRequest, unlockFields  } from './AFI_Setup.js'
+import { checkField, lockFields, updateRequest, unlockFields, setupCategories } from './AFI_Setup.js'
 import { addApiInDb, getImgsUploaded, getmissingImgsArtc, callPixabayApi, getImgsPixabay  } from './AFI_API.js'
 import { displayResultsImgs, selectRandom, displayMessage, hideElement, displaytableHeader, displayMissingArticles, displayEndScreen } from './AFI_Display.js'
+import AFI_paginator from './AFI_paginator.js';
 (() => {
   let options = {
     method: "GET",
@@ -23,6 +24,7 @@ import { displayResultsImgs, selectRandom, displayMessage, hideElement, displayt
   let messagesContainer = document.getElementById("messages");
   let endScreen = document.querySelector('.endScreen');
   let selectedImgs = [];
+  let categories;
   ////////////////////////////////////////////ENREGISTREMENT DES CLEFS API/////////////////////////////////////////
 
   pixabayAPIForm.addEventListener("submit", async (e) => {
@@ -49,11 +51,13 @@ import { displayResultsImgs, selectRandom, displayMessage, hideElement, displayt
     e.preventDefault();
     endScreen.innerHTML= "";
     let missingFeaturedimg = await getmissingImgsArtc(options); //retourne un tableau contenant les ojets articles
+    // console.log(missingFeaturedimg)
     unlockFields();
     displaytableHeader(missingArtTable, missingFeaturedArticleThead, resultImgsThead);
-    displayMissingArticles(missingFeaturedimg);
-    setupCommonRequest();
-    setupSelectAll();
+    categories = setupCategories(missingFeaturedimg);
+    const paginator = new AFI_paginator(missingFeaturedimg, categories);
+    paginator.displayItems();
+
     let submitToApiBtn = document.getElementById("submitToApiBtn");
 
     submitToApiBtn.addEventListener("click", async () => {

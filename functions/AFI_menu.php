@@ -32,9 +32,11 @@ wp_enqueue_script('AFI-accordion-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
       <tr>
         <th>
           <input type="checkbox" name="selectAll" id="selectAll-1" class='selectAll'>
-          <label for="selectAll">Selectionner tous les articles</label>
+          <label for="selectAll-1">Selectionner tous les articles</label>
         </th>
-        <th> H1 des articles </th>
+        <th id="categories">
+        </th>
+        <th>H1 des articles</th>
         <th><input type="text" name="fullfill" id="fullfill" placeholder="requête commune"></th>
       </tr>
     </thead>
@@ -42,15 +44,18 @@ wp_enqueue_script('AFI-accordion-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
       <tr>
         <th>
           <input type="checkbox" name="selectAll" id="selectAll-2" class='selectAll'>
-          <label for="selectAll">Selectionner tous les articles</label>
+          <label for="selectAll-2">Selectionner tous les articles</label>
         </th>
-        <th> H1 des articles </th>
+        <th>Catégorie</th>
+        <th>H1 de l'article</th>
         <th>Images trouvées</th>
       </tr>
     </thead>
     <tbody id="missingFeaturedArticlesBody"></tbody>
   </table>
+  <div id="pagination"></div>
   <div id="messages"></div>
+
 </div>
 
- <script src="<?= trailingslashit(PLUG_DIR) . 'assets/js/AFI_admin.js'?>" type ="module" id="AFI-admin-js"></script> 
+<script src="<?= trailingslashit(PLUG_DIR) . 'assets/js/AFI_admin.js' ?>" type="module" id="AFI-admin-js"></script>

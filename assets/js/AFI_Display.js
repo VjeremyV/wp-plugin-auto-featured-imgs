@@ -134,6 +134,7 @@ function displayMissingArticles(articles) {
       (article) => `
   <tr>
   <td><input type="checkbox" name="${article.include}" class="include" id="${article.include}"></td>
+  <td><p>${article.category}</p></td>
   <td><p>${article.post_title}</p></td>
   <td><input type="text" name="${article.request}" class="requestInputs" id="${article.request}"></td>
   </tr>

@@ -145,6 +145,7 @@ function AFI_get_imgs_routes(){
 function AFI_get_missing_featured_imgs_articles (){
     global $wpdb;
     $request = 'SELECT ID, post_title, guid  FROM '. $wpdb->prefix . 'posts as p WHERE NOT EXISTS (SELECT *  FROM '.$wpdb->prefix .'postmeta as m where m.post_id=p.ID and  meta_key = \'_thumbnail_id\') and `post_type`="post" AND post_status != \'auto-draft\';';
+    
     $data= $wpdb->get_results(
         $wpdb->prepare($request)
     );
@@ -153,6 +154,11 @@ function AFI_get_missing_featured_imgs_articles (){
     foreach($data as $article){
         $article->request = 'request-'.$count;
         $article->include = 'include-'.$count;
+        $request = 'SELECT name from '.$wpdb->prefix .'terms terms join '.$wpdb->prefix .'term_taxonomy t on terms.term_id = t.term_id JOIN '.$wpdb->prefix.'term_relationships r on r.term_taxonomy_id = t.term_taxonomy_id join '.$wpdb->prefix .'posts p on r.object_id = p.ID where p.ID = %s';
+        $category = $wpdb->get_results(
+            $wpdb->prepare($request, $article->ID)
+        );
+        $article->category = html_entity_decode($category[0]->name);
         $new_array[] = $article;
         $count++;
     }
