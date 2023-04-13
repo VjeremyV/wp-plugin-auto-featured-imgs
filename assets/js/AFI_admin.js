@@ -1,6 +1,6 @@
 import { checkField, lockFields, updateRequest, unlockFields, setupCategories } from './AFI_Setup.js'
 import { addApiInDb, getImgsUploaded, getmissingImgsArtc, callPixabayApi, getImgsPixabay  } from './AFI_API.js'
-import { displayResultsImgs, selectRandom, displayMessage, hideElement, displaytableHeader, displayMissingArticles, displayEndScreen } from './AFI_Display.js'
+import { displayResultsImgs, selectRandom, displayMessage, hideElement, displaytableHeader, displayEndScreen } from './AFI_Display.js'
 import AFI_paginator from './AFI_paginator.js';
 (() => {
   let options = {
@@ -21,7 +21,7 @@ import AFI_paginator from './AFI_paginator.js';
   let missingArtTable = document.getElementById("missingFeaturedArticles");
   let missingFeaturedArticleThead = document.getElementById("missingFeaturedArticleThead");
   let resultImgsThead = document.getElementById("resultImgsThead");
-  let messagesContainer = document.getElementById("messages");
+  let messagesContainer = document.querySelectorAll(".messages");
   let endScreen = document.querySelector('.endScreen');
   let selectedImgs = [];
   let categories;
@@ -51,51 +51,57 @@ import AFI_paginator from './AFI_paginator.js';
     e.preventDefault();
     endScreen.innerHTML= "";
     let missingFeaturedimg = await getmissingImgsArtc(options); //retourne un tableau contenant les ojets articles
-    // console.log(missingFeaturedimg)
     unlockFields();
     displaytableHeader(missingArtTable, missingFeaturedArticleThead, resultImgsThead);
     categories = setupCategories(missingFeaturedimg);
     const paginator = new AFI_paginator(missingFeaturedimg, categories);
     paginator.displayItems();
+    let submitToApiBtn = document.querySelectorAll(".submitToApiBtn");
 
-    let submitToApiBtn = document.getElementById("submitToApiBtn");
 
-    submitToApiBtn.addEventListener("click", async () => {
-      if (checkField(missingFeaturedimg)) {
-        displayMessage("Recherche envoyée", true, messagesContainer);
-        hideElement(submitToApiBtn);
-        missingFeaturedimg = updateRequest(missingFeaturedimg);
-        missingFeaturedimg = await callPixabayApi(missingFeaturedimg);
-        displaytableHeader(missingArtTable, missingFeaturedArticleThead, resultImgsThead, true);
-        displayResultsImgs(missingFeaturedimg, selectedImgs);
-        let rebootBtns = document.querySelectorAll('.reboot');
-        rebootBtns.forEach((btn)=> {
-          btn.addEventListener('click', ()=> {
-            let article = missingFeaturedimg[btn.getAttribute('id')]
-            let linkTag = document.getElementById('link-'+btn.getAttribute('id'))
-            let newLink = selectRandom(article.imgsUrls).url
-            linkTag.innerHTML = `<img class="resultsImgs" src="${newLink}+'" >`
-            article.actualImgsUrls = newLink
+    submitToApiBtn.forEach((btn)=> {
+      btn.style.display = 'inline-block';
+      btn.addEventListener("click", async () => {
+        if (checkField(missingFeaturedimg)) {
+          displayMessage("Recherche envoyée", true, messagesContainer);
+          hideElement(btn);
+          missingFeaturedimg = updateRequest(missingFeaturedimg);
+          missingFeaturedimg = await callPixabayApi(missingFeaturedimg);
+          displaytableHeader(missingArtTable, missingFeaturedArticleThead, resultImgsThead, true);
+          displayResultsImgs(missingFeaturedimg, selectedImgs);
+          let rebootBtns = document.querySelectorAll('.reboot');
+          rebootBtns.forEach((btn)=> {
+            btn.addEventListener('click', ()=> {
+              let article = missingFeaturedimg[btn.getAttribute('id')]
+              let linkTag = document.getElementById('link-'+btn.getAttribute('id'))
+              let newLink = selectRandom(article.imgsUrls).url
+              linkTag.href = newLink;
+              linkTag.innerHTML = `<img class="resultsImgs" src="${newLink}+'" >`
+              article.actualImgsUrls = newLink
+            })
           })
-        })
-
-        setupSelectAll();
-        let imgsValidationBtn = document.getElementById("imgsValidationBtn");
-        imgsValidationBtn.addEventListener("click", async () => {
-          if (checkField(missingFeaturedimg, true)) {
-            hideElement(imgsValidationBtn);
-            await getImgsUploaded(missingFeaturedimg, optionsPost);
-            displayEndScreen(missingArtTable, endScreen, missingFeaturedimg);
-         
-            displayMessage("Les images ont bien été importées sur vos articles",true ,messagesContainer);
-          } else {
-            displayMessage("Vous n'avez pas selectionné d'images", false, messagesContainer);
-          }
-        });
-      } else {
-        displayMessage("La requête d'un article selectionné n'a pas été remplie ou aucun artile n'a été selectionné", false,messagesContainer);
-      }
-    });
+  
+          paginator.setupSelectAll();
+          let imgsValidationBtn = document.querySelectorAll(".imgsValidationBtn");
+          imgsValidationBtn.forEach(button => {
+            button.addEventListener("click", async () => {
+              if (checkField(missingFeaturedimg, true)) {
+                hideElement(button);
+                await getImgsUploaded(missingFeaturedimg, optionsPost);
+                displayEndScreen(missingArtTable, endScreen, missingFeaturedimg);
+             
+                displayMessage("Les images ont bien été importées sur vos articles",true ,messagesContainer);
+              } else {
+                displayMessage("Vous n'avez pas selectionné d'images", false, messagesContainer);
+              }
+            });
+          });
+          
+        } else {
+          displayMessage("La requête d'un article selectionné n'a pas été remplie ou aucun artile n'a été selectionné", false, messagesContainer);
+        }
+      });
+    })
   });
 
 })();

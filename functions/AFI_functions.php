@@ -220,7 +220,7 @@ function AFI_add_apikeys(WP_REST_Request $request){
             );
             $apiKey = $data[0]->clef;
         //informations endpoint API
-        $url = 'https://pixabay.com/api/?key='.$apiKey.'&q='.$text;
+        $url = 'https://pixabay.com/api/?key='.$apiKey.'&q='.$text.'&orientation=horizontal';
 
         //on renvoie le resultat du call API
         return json_decode(call_API_Pixabay($url));

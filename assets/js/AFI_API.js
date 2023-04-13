@@ -55,6 +55,15 @@ async function getmissingImgsArtc(options) {
  * @returns
  */
 async function callPixabayApi(articles) {
+  let requestNumber = 0;
+  let count = 1;
+  laughtLoader(true);
+  let messagesBox = document.getElementById('loaderMessage');
+  articles.forEach(article => {
+    if (article["request-text"]){
+      requestNumber++
+    }
+  });
   const allResponses = await Promise.all(
     articles.map(async (article, index) => {
       if (article["request-text"]) {
@@ -68,11 +77,14 @@ async function callPixabayApi(articles) {
           temp.push(data);
         }
         articles[index]["imgsUrls"] = temp;
+        messagesBox.innerHTML =  `<span class="validationMessageLoader">Traitement de ${count}/${requestNumber} images</span>`
+        count++;
       } else {
         articles[index]["imgsUrls"] = false;
       }
     })
   );
+  laughtLoader(false);
   return articles;
 }
 
@@ -84,4 +96,40 @@ async function getImgsPixabay(request) {
   const response = await fetch("/wp-json/AFI/v1/AFI_get_imgs?text=" + request);
   const data = await response.json();
   return data;
+}
+
+
+function laughtLoader(start){
+  let animationContainers = document.getElementById('animationContainer')
+
+  if(start){
+
+    animationContainers.innerHTML = `
+      <div class='loadd'>
+      <div class='body'>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <div class='base'>
+              <span></span>
+              <div class='face'></div>
+          </div>
+      </div>
+      <div class='longfazers'>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+      </div>
+      <div id="loaderMessage"></div>
+      </div>
+
+    `
+    
+  } else if (!start){
+  
+      animationContainers.innerHTML = ''
+    
+  }
 }

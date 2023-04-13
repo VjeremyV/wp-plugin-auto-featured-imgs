@@ -12,7 +12,7 @@ export { checkField, lockFields, updateRequest, unlockFields, setupCategories }
 
     fields.forEach((field) => {
       let includeBtn = document.getElementById(field.include);
-      if (!secondTime) {
+      if (!secondTime && includeBtn != null) {
         let inputRequest = document.getElementById(field.request);
         if (includeBtn.checked === true && inputRequest.value == "") {
           valid = false;
@@ -51,8 +51,8 @@ export { checkField, lockFields, updateRequest, unlockFields, setupCategories }
    */
    function lockFields(fields, secondTime = false) {
     fields.forEach((field) => {
-      if (!secondTime) {
-        let inputRequest = document.getElementById(field.request);
+      let inputRequest = document.getElementById(field.request);
+      if (!secondTime && inputRequest!= null) {
         inputRequest.disabled = true;
         let otherSelectBtn = document.getElementById(field.include);
         otherSelectBtn.disabled = true;
@@ -91,11 +91,13 @@ export { checkField, lockFields, updateRequest, unlockFields, setupCategories }
     let count = 0;
     articles.forEach((field) => {
       let check = document.getElementById(field.include);
-      if (check.checked === true) {
-        let inputRequest = document.getElementById(field.request);
-        let value = inputRequest.value.trim();
-        let request = value.replaceAll(" ", "-");
-        articles[count]["request-text"] = request;
+      if(check != null){
+        if (check.checked === true) {
+          let inputRequest = document.getElementById(field.request);
+          let value = inputRequest.value.trim();
+          let request = value.replaceAll(" ", "-");
+          articles[count]["request-text"] = request;
+        }
       }
       count++;
     });

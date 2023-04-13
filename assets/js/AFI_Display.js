@@ -5,8 +5,9 @@ export {
   hideElement,
   displaytableHeader,
   displayMissingArticles,
-  displayEndScreen,
+  displayEndScreen
 };
+
 
 function getRandomUniqueImg(article, usedImgs) {
   if (article.imgsUrls) {
@@ -52,11 +53,12 @@ function displayResultsImgs(articles, usedImgs) {
       return article.imgsUrls
         ? `
   <tr>
-  <td><input type="checkbox" name="${article.include}" class="include" id="${
+    <td><input type="checkbox" name="${article.include}" class="include" id="${
             article.include
           }"></td>
-  <td><p>${article.post_title}</p></td>
-  <td class="tdImgsResults">${imgurl !=""? `<a id="link-${index}" href="${imgurl.url}" target="_blank">  <img class="resultsImgs" src="${imgurl.url}" ></a> `
+    <td><p>${article.category}</p></td>
+    <td><p>${article.post_title}</p></td>
+    <td class="tdImgsResults">${imgurl !=""? `<a id="link-${index}" href="${imgurl.url}" target="_blank">  <img class="resultsImgs" src="${imgurl.url}" ></a> `
       : "<div>Aucune Image ne correspond à la requête</div>"
   } <span class="reboot dashicons dashicons-image-rotate" id="${index}"></span></td>
   </tr>
@@ -65,10 +67,12 @@ function displayResultsImgs(articles, usedImgs) {
     })
     .join("");
 
-  html += `   <td></td>   <td></td>   <td><input type="submit" id="imgsValidationBtn" value="Valider les images"></td>
+  html += `   <td></td>   <td></td> <td></td>   <td><input type="submit" class="imgsValidationBtn" value="Valider les images"></td>
     `;
   let tableBody = document.getElementById("missingFeaturedArticlesBody");
   tableBody.innerHTML = html;
+  let pagination = document.getElementById('pagination');
+  pagination.innerHTML= '';
 }
 
 
@@ -78,18 +82,24 @@ function displayResultsImgs(articles, usedImgs) {
  * @param {string} message
  * @param {boolean} validation
  */
-function displayMessage(message, validation, messagesContainer) {
+function displayMessage(message, validation, messagesContainers) {
   if (validation) {
-    messagesContainer.innerHTML = `
-      <span class="validationMessage">${message}</span>
-      `;
+    messagesContainers.forEach((messagesContainer)=> {
+      messagesContainer.innerHTML = `
+        <span class="validationMessage">${message}</span>
+        `;
+    })
   } else {
-    messagesContainer.innerHTML = `
-      <span class="errorMessage">${message}</span>
-      `;
+    messagesContainers.forEach((messagesContainer)=> {
+      messagesContainer.innerHTML = `
+        <span class="errorMessage">${message}</span>
+        `;
+    })
   }
   setTimeout(() => {
-    messagesContainer.innerHTML = "";
+    messagesContainers.forEach((messagesContainer)=> {
+      messagesContainer.innerHTML = "";
+    })
   }, 4000);
 }
 

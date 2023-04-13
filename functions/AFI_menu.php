@@ -27,6 +27,11 @@ wp_enqueue_script('AFI-accordion-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
     </form>
   </div>
   <div class="endScreen"></div>
+  <div class="messages"></div>
+  <div id="animationContainer">
+
+  </div>
+
   <table id="missingFeaturedArticles">
     <thead id="missingFeaturedArticleThead">
       <tr>
@@ -37,7 +42,9 @@ wp_enqueue_script('AFI-accordion-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
         <th id="categories">
         </th>
         <th>H1 des articles</th>
-        <th><input type="text" name="fullfill" id="fullfill" placeholder="requête commune"></th>
+        <th class="submitContainer">
+          <input type="submit" class="submitToApiBtn" value="Envoyer">
+          <input type="text" name="fullfill" id="fullfill" placeholder="requête commune"></th>
       </tr>
     </thead>
     <thead id="resultImgsThead">
@@ -48,13 +55,16 @@ wp_enqueue_script('AFI-accordion-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
         </th>
         <th>Catégorie</th>
         <th>H1 de l'article</th>
-        <th>Images trouvées</th>
+        <th class="submitContainer"><span>Images trouvées</span>
+        <input type="submit" class="imgsValidationBtn" value="Valider les images">
+        </th>
       </tr>
     </thead>
     <tbody id="missingFeaturedArticlesBody"></tbody>
   </table>
   <div id="pagination"></div>
-  <div id="messages"></div>
+
+  <div class="messages"></div>
 
 </div>
 
