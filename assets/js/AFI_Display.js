@@ -9,14 +9,14 @@ export {
 };
 
 
-function getRandomUniqueImg(article, usedImgs) {
-  if (article.imgsUrls) {
-      let imgurl = selectRandom(article.imgsUrls, usedImgs)
-      article["actualImgsUrls"] = imgurl.url;
-      return imgurl ; //renvoie un objet {id , url}
-  }
-  return "";
-}
+// function getRandomUniqueImg(article, usedImgs) {
+//   if (article.imgsUrls) {
+//       let imgurl = selectRandom(article.imgsUrls, usedImgs)
+//       article["actualImgsUrls"] = imgurl.url;
+//       return imgurl ; //renvoie un objet {id , url}
+//   }
+//   return "";
+// }
 
 /**
  * renvoie une url d'images aléatoire
@@ -25,20 +25,29 @@ function getRandomUniqueImg(article, usedImgs) {
  */
 function selectRandom(imgsUrls, ids= []) {
   let randomSelector = Math.floor(Math.random() * imgsUrls.length);
-  if(imgsUrls.length > 0){
-
-    if(ids.length > 0){
-      ids.forEach((id) => {
-        if(id === imgsUrls[randomSelector]){
-          return selectRandom(imgsUrls, ids) 
-        }
-      })
-    }
-    ids.push(imgsUrls[randomSelector]);
-    return imgsUrls[randomSelector];
-  }
-  return ""
+  return imgsUrls[randomSelector];
 }
+// /**
+//  * renvoie une url d'images aléatoire
+//  * @param {array} imgs
+//  * @returns
+//  */
+// function selectRandom(imgsUrls, ids= []) {
+//   let randomSelector = Math.floor(Math.random() * imgsUrls.length);
+//   if(imgsUrls.length > 0){
+
+//     if(ids.length > 0){
+//       ids.forEach((id) => {
+//         if(id === imgsUrls[randomSelector]){
+//           return selectRandom(imgsUrls, ids) 
+//         }
+//       })
+//     }
+//     ids.push(imgsUrls[randomSelector]);
+//     return imgsUrls[randomSelector];
+//   }
+//   return ""
+// }
 
 
 /**
@@ -48,8 +57,13 @@ function selectRandom(imgsUrls, ids= []) {
  */
 function displayResultsImgs(articles, usedImgs) {
   let html = articles
-    .map((article, index) => {
-      let imgurl = getRandomUniqueImg(article, usedImgs);
+  .map((article, index) => {
+    let imgurl = selectRandom(article.imgsUrls, usedImgs);
+    if(article.imgsUrls){
+
+      console.log(articles)
+      console.log(imgurl)
+    }
       return article.imgsUrls
         ? `
   <tr>
@@ -118,19 +132,18 @@ function hideElement(element) {
  * @param {*} secondHeader
  * @param {*} secondTime
  */
-function displaytableHeader(
-  table,
-  firstHeader,
-  secondHeader,
-  secondTime = false
-) {
+function displaytableHeader(table, firstHeader, secondHeader, secondTime = false) {
+  let submitBtnContainer = document.querySelector('.submitBtnContainer')
   if (!secondTime) {
     table.style.display = "table";
     firstHeader.style.display = "table-header-group";
     secondHeader.style.display = "none";
+    submitBtnContainer.style.display = 'flex'
   } else {
     firstHeader.style.display = "none";
     secondHeader.style.display = "table-header-group";
+    submitBtnContainer.style.display = 'none'
+
   }
 }
 
@@ -163,6 +176,7 @@ function displayMissingArticles(articles) {
  * @param {*} articles
  */
 function displayEndScreen(table, endScreenTag, articles) {
+  
   table.style.display = "none";
   let html =
     '<div class="resultContainer"><h3>Nouvelles images mises en avant importées</h3><div>';

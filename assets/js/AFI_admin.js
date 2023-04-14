@@ -25,6 +25,8 @@ import AFI_paginator from './AFI_paginator.js';
   let endScreen = document.querySelector('.endScreen');
   let selectedImgs = [];
   let categories;
+  let missingFeaturedimg ;
+  let submitToApiBtn = document.querySelectorAll(".submitToApiBtn");
   ////////////////////////////////////////////ENREGISTREMENT DES CLEFS API/////////////////////////////////////////
 
   pixabayAPIForm.addEventListener("submit", async (e) => {
@@ -49,16 +51,14 @@ import AFI_paginator from './AFI_paginator.js';
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   formGenerateImgs.addEventListener("submit", async (e) => {
     e.preventDefault();
+
     endScreen.innerHTML= "";
-    let missingFeaturedimg = await getmissingImgsArtc(options); //retourne un tableau contenant les ojets articles
+    missingFeaturedimg = await getmissingImgsArtc(options); //retourne un tableau contenant les ojets articles
     unlockFields();
     displaytableHeader(missingArtTable, missingFeaturedArticleThead, resultImgsThead);
     categories = setupCategories(missingFeaturedimg);
     const paginator = new AFI_paginator(missingFeaturedimg, categories);
     paginator.displayItems();
-    let submitToApiBtn = document.querySelectorAll(".submitToApiBtn");
-
-
     submitToApiBtn.forEach((btn)=> {
       btn.style.display = 'inline-block';
       btn.addEventListener("click", async () => {
@@ -68,6 +68,7 @@ import AFI_paginator from './AFI_paginator.js';
           missingFeaturedimg = updateRequest(missingFeaturedimg);
           missingFeaturedimg = await callPixabayApi(missingFeaturedimg);
           displaytableHeader(missingArtTable, missingFeaturedArticleThead, resultImgsThead, true);
+          selectedImgs = [];
           displayResultsImgs(missingFeaturedimg, selectedImgs);
           let rebootBtns = document.querySelectorAll('.reboot');
           rebootBtns.forEach((btn)=> {

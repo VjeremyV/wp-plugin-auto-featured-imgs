@@ -31,7 +31,7 @@ export { checkField, lockFields, updateRequest, unlockFields, setupCategories }
     });
 
     if (!secondTime) {
-      if (emptyFields === fields.length) {
+      if (emptyFields === 20) { //rapport à la pagination
         valid = false;
       }
     } else {

@@ -5,7 +5,7 @@
     Description: Complète automatiquement articles n'ayant pas d'images à la une avec une image en rapport avec le h1 de l'article 
     Author: Vaugoyeau Jérémy
     Author URI:       https://github.com/VjeremyV
-    Version: 0.1
+    Version: 0.9.0.1
  */
 define('PLUG_DIR', plugin_dir_url(__FILE__));
 require_once plugin_dir_path(__FILE__) . 'functions/AFI_functions.php';

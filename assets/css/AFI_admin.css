@@ -223,7 +223,10 @@ object-fit: cover;
   }
 
 
-
+.submitBtnContainer {
+    display: none;
+    justify-content: end;
+}
   /******************************************************************************Animation Loader*******************************************************************/
   .loadd {
     position: fixed;

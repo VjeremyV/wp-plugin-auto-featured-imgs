@@ -73,12 +73,9 @@ export default class AFI_paginator {
         )
         .join("");
     }
-
-    
-  html += `   <td></td>   <td></td> <td></td>   <td><input type="submit" class="submitToApiBtn" value="Envoyer"></td>
-  `;
     let tableBody = document.getElementById("missingFeaturedArticlesBody");
     tableBody.innerHTML = html;
+
 
     this.setupCommonRequest();
     this.setupSelectAll();
