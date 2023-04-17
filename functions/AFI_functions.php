@@ -200,7 +200,6 @@ function AFI_add_apikeys(WP_REST_Request $request){
                 return 'fail';
             }
     }
-
 }
     /**
      * récupère les images sur pixabay
@@ -259,6 +258,16 @@ function save_file(WP_REST_Request $request){
     $post_id = htmlspecialchars($params['post_id']);
     $file = Upload_file($image_url, $image_title, $post_id);
     return json_encode($file['id']);
-    
+}
 
+function is_pixabayApiKay_exists(){
+    global $wpdb;
+    $request = 'SELECT count(*)  FROM '. $wpdb->prefix . 'wa_AFI_keys'. ' WHERE `service` = \'pixabay\'';
+    $data= $wpdb->get_results(
+        $wpdb->prepare($request)
+    );
+    if(count($data) > 0){
+        return true;
+    }
+    return false;
 }

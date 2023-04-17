@@ -4,7 +4,10 @@ export {
   getmissingImgsArtc,
   callPixabayApi,
   getImgsPixabay,
+  laughtLoader
 };
+
+import { displayMessage } from './AFI_Display.js'
 
 async function addApiInDb(apiKey, apiName, optionsPost) {
   let response = await fetch("/wp-json/AFI/v1/add_API", {
@@ -20,9 +23,21 @@ async function addApiInDb(apiKey, apiName, optionsPost) {
  * @param {object} articles
  */
 async function getImgsUploaded(articles, optionsPost) {
+  let count = 1;
+  let requestNumber = 0;
+  let messagesBox = document.getElementById('loaderMessage');
+
+for(let article of articles){
+  let checkbox = document.getElementById(article.include);
+  if (article["request-text"] && checkbox.checked === true) {
+    requestNumber++;
+  }
+}
+try{
   for (let article of articles) {
     let checkbox = document.getElementById(article.include);
     if (article["request-text"] && checkbox.checked === true) {
+      messagesBox.innerHTML =  `<span class="validationMessageLoader">Validation de ${count}/${requestNumber} images</span>`
       let response = await fetch("/wp-json/AFI/v1/save_file", {
         ...optionsPost,
         body: JSON.stringify({
@@ -33,8 +48,14 @@ async function getImgsUploaded(articles, optionsPost) {
       });
       let data = await response.json();
       article["featuredImgId"] = data;
+      count++;
     }
   }
+} catch(err){
+  console.log('fetch error : '+ err)
+  displayMessage('une erreur est survenue lors du téléchargement des images', false, document.querySelectorAll(".messages"))
+
+}
 }
 
 /**
@@ -42,11 +63,18 @@ async function getImgsUploaded(articles, optionsPost) {
  * @returns
  */
 async function getmissingImgsArtc(options) {
+try{
+
+  
   const response = await fetch("/wp-json/AFI/v1/get_missing_articles", {
     ...options,
   });
   const data = await response.json();
   return data;
+} catch(err){
+  console.log('fetch error : '+ err)
+  displayMessage('une erreur est survenue lors de la connexion à l\'API rest de wordpress', false, document.querySelectorAll(".messages"))
+}
 }
 
 /**
@@ -93,13 +121,19 @@ async function callPixabayApi(articles) {
  * @param {string} request
  */
 async function getImgsPixabay(request) {
+  try{
   const response = await fetch("/wp-json/AFI/v1/AFI_get_imgs?text=" + request);
   const data = await response.json();
   return data;
+  }
+  catch(err) {
+    console.log('fetch error : '+ err)
+    displayMessage('une erreur est survenue lors de la recherche des images', false, document.querySelectorAll(".messages"))
+  }
 }
 
 
-function laughtLoader(start){
+function laughtLoader(start = true){
   let animationContainers = document.getElementById('animationContainer')
 
   if(start){

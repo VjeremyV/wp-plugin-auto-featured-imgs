@@ -9,14 +9,6 @@ export {
 };
 
 
-// function getRandomUniqueImg(article, usedImgs) {
-//   if (article.imgsUrls) {
-//       let imgurl = selectRandom(article.imgsUrls, usedImgs)
-//       article["actualImgsUrls"] = imgurl.url;
-//       return imgurl ; //renvoie un objet {id , url}
-//   }
-//   return "";
-// }
 
 /**
  * renvoie une url d'images aléatoire
@@ -27,28 +19,6 @@ function selectRandom(imgsUrls, ids= []) {
   let randomSelector = Math.floor(Math.random() * imgsUrls.length);
   return imgsUrls[randomSelector];
 }
-// /**
-//  * renvoie une url d'images aléatoire
-//  * @param {array} imgs
-//  * @returns
-//  */
-// function selectRandom(imgsUrls, ids= []) {
-//   let randomSelector = Math.floor(Math.random() * imgsUrls.length);
-//   if(imgsUrls.length > 0){
-
-//     if(ids.length > 0){
-//       ids.forEach((id) => {
-//         if(id === imgsUrls[randomSelector]){
-//           return selectRandom(imgsUrls, ids) 
-//         }
-//       })
-//     }
-//     ids.push(imgsUrls[randomSelector]);
-//     return imgsUrls[randomSelector];
-//   }
-//   return ""
-// }
-
 
 /**
  * Affiche les resultats d'images dans le tableau de resultat
@@ -59,11 +29,7 @@ function displayResultsImgs(articles, usedImgs) {
   let html = articles
   .map((article, index) => {
     let imgurl = selectRandom(article.imgsUrls, usedImgs);
-    if(article.imgsUrls){
-
-      console.log(articles)
-      console.log(imgurl)
-    }
+    article.imgsUrls ? article["actualImgsUrls"] = imgurl.url : "";
       return article.imgsUrls
         ? `
   <tr>

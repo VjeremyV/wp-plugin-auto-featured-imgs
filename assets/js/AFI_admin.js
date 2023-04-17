@@ -1,5 +1,5 @@
-import { checkField, lockFields, updateRequest, unlockFields, setupCategories } from './AFI_Setup.js'
-import { addApiInDb, getImgsUploaded, getmissingImgsArtc, callPixabayApi, getImgsPixabay  } from './AFI_API.js'
+import { checkField, lockFields, updateRequest, unlockFields, setupCategories, checkImgsSelected } from './AFI_Setup.js'
+import { addApiInDb, getImgsUploaded, getmissingImgsArtc, callPixabayApi, laughtLoader  } from './AFI_API.js'
 import { displayResultsImgs, selectRandom, displayMessage, hideElement, displaytableHeader, displayEndScreen } from './AFI_Display.js'
 import AFI_paginator from './AFI_paginator.js';
 (() => {
@@ -27,6 +27,7 @@ import AFI_paginator from './AFI_paginator.js';
   let categories;
   let missingFeaturedimg ;
   let submitToApiBtn = document.querySelectorAll(".submitToApiBtn");
+  let firstTime = true;
   ////////////////////////////////////////////ENREGISTREMENT DES CLEFS API/////////////////////////////////////////
 
   pixabayAPIForm.addEventListener("submit", async (e) => {
@@ -59,6 +60,9 @@ import AFI_paginator from './AFI_paginator.js';
     categories = setupCategories(missingFeaturedimg);
     const paginator = new AFI_paginator(missingFeaturedimg, categories);
     paginator.displayItems();
+
+    
+    if(firstTime){
     submitToApiBtn.forEach((btn)=> {
       btn.style.display = 'inline-block';
       btn.addEventListener("click", async () => {
@@ -86,12 +90,14 @@ import AFI_paginator from './AFI_paginator.js';
           let imgsValidationBtn = document.querySelectorAll(".imgsValidationBtn");
           imgsValidationBtn.forEach(button => {
             button.addEventListener("click", async () => {
-              if (checkField(missingFeaturedimg, true)) {
+              if (checkImgsSelected(missingFeaturedimg)) {
+                laughtLoader()
                 hideElement(button);
                 await getImgsUploaded(missingFeaturedimg, optionsPost);
                 displayEndScreen(missingArtTable, endScreen, missingFeaturedimg);
              
                 displayMessage("Les images ont bien été importées sur vos articles",true ,messagesContainer);
+                laughtLoader(false);
               } else {
                 displayMessage("Vous n'avez pas selectionné d'images", false, messagesContainer);
               }
@@ -103,6 +109,11 @@ import AFI_paginator from './AFI_paginator.js';
         }
       });
     })
+    firstTime = false;
+  } else {
+    submitToApiBtn.forEach((btn)=> {
+      btn.style.display = 'inline-block';})
+  }
   });
-
+  
 })();

@@ -1,4 +1,5 @@
 <?php
+require_once(__DIR__.'/AFI_functions.php');
 wp_enqueue_style('AFI-css-admin', trailingslashit(PLUG_DIR) . 'assets/css/AFI_admin.css', false, '1.0', 'all');
 wp_enqueue_script('AFI-animation-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI_animation.js', [], true);
 wp_enqueue_script('AFI-accordion-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI_accordion.js', [], true);
@@ -13,7 +14,7 @@ wp_enqueue_script('AFI-accordion-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
   <div id="apiKeysContainer" class="panel">
     <form id="pixabayAPIForm">
       <h3>Pixabay</h3>
-      <input type="password" name="pixabayAPI" id="pixabayAPI">
+      <input type="password" name="pixabayAPI" id="pixabayAPI" value = '<?= is_pixabayApiKay_exists() ? "*********" : ""?>'>
       <div class="showPwd">
         <input type="checkbox" id="showpwdPixabay">
         <label for="showpwdPixabay">Voir la clé</label>

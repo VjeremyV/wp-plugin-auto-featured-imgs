@@ -14,7 +14,6 @@ export default class AFI_paginator {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     let pageItems = this.data.slice(startIndex, endIndex);
-
     // 1er affichage des resutats
     if (!this.secondTime && this.filter.length === 0) {
       let categoryHtml = this.categories
@@ -52,14 +51,20 @@ export default class AFI_paginator {
     }
     //si il y a un filtre
     else if (this.filter.length > 0) {
-      pageItems = [];
+      let items = [];
       this.totalFilteredArticle = 0;
       this.data.forEach((element) => {
         if (this.filter.indexOf(element.category) != -1) {
           this.totalFilteredArticle++;
-          pageItems.push(element);
+          items.push(element);
         }
       });
+      pageItems = items.slice(startIndex, endIndex);
+      if(pageItems.length == 0){
+        this.currentPage = 1 ;
+        let newStartIndex = (this.currentPage - 1) * this.itemsPerPage;
+        pageItems = items.slice(newStartIndex, endIndex);
+      }
       html = pageItems
         .map(
           (article) => `
