@@ -20,7 +20,6 @@ function call_API_Pixabay(string $url)
     }
     curl_close($ch);
 }
-
 function call_API_Deepl(string $url, string $apiKey, string $text){
     $data_array = [
         'text' => $text,

@@ -262,12 +262,12 @@ function save_file(WP_REST_Request $request){
 
 function is_pixabayApiKay_exists(){
     global $wpdb;
-    $request = 'SELECT count(*)  FROM '. $wpdb->prefix . 'wa_AFI_keys'. ' WHERE `service` = \'pixabay\'';
+    $request = 'SELECT *  FROM '. $wpdb->prefix . 'wa_AFI_keys'. ' WHERE `service` = \'pixabay\'';
     $data= $wpdb->get_results(
         $wpdb->prepare($request)
     );
     if(count($data) > 0){
-        return true;
+        return true ;
     }
-    return false;
+    return false ;
 }

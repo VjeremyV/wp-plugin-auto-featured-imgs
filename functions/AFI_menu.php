@@ -14,7 +14,9 @@ wp_enqueue_script('AFI-accordion-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
   <div id="apiKeysContainer" class="panel">
     <form id="pixabayAPIForm">
       <h3>Pixabay</h3>
-      <input type="password" name="pixabayAPI" id="pixabayAPI" value = '<?= is_pixabayApiKay_exists() ? "*********" : ""?>'>
+      <?= is_pixabayApiKay_exists() ? "<p>Une clef est déjà renseignée</p>" : ""; ?>
+
+      <input type="password" name="pixabayAPI" id="pixabayAPI" placeholder = 'Votre clef API ici'>
       <div class="showPwd">
         <input type="checkbox" id="showpwdPixabay">
         <label for="showpwdPixabay">Voir la clé</label>
@@ -28,7 +30,7 @@ wp_enqueue_script('AFI-accordion-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
     </form>
   </div>
   <div class="endScreen"></div>
-  <div class="messages"></div>
+  <div id="upMessage" class="messages"></div>
   <div id="animationContainer">
 
   </div>
@@ -57,6 +59,7 @@ wp_enqueue_script('AFI-accordion-js', trailingslashit(PLUG_DIR) . 'assets/js/AFI
         </th>
         <th>Catégorie</th>
         <th>H1 de l'article</th>
+        <th>Requête envoyée</th>
         <th class="submitContainer"><span>Images trouvées</span>
           <input type="submit" class="imgsValidationBtn" value="Valider les images">
         </th>
