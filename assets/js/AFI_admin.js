@@ -135,7 +135,7 @@ import AFI_paginator from "./AFI_paginator.js";
                 );
                 let newLink = selectRandom(article.imgsUrls).url;
                 linkTag.href = newLink;
-                linkTag.innerHTML = `<img class="resultsImgs" src="${newLink}+'" >`;
+                linkTag.innerHTML = `<img class="resultsImgs" src="${newLink}" >`;
                 article.actualImgsUrls = newLink;
               });
             });
